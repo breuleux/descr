@@ -2,12 +2,8 @@
 import re
 
 from collections import OrderedDict
-from ..format import (
-    SimpleRules, Formatter,
-    exhaust_stream, custom_merge,
-    extract_sole_class, RuleBuilder
-    )
-from ..rules import RuleTree, RuleTreeExplorer
+from ..format import Formatter, exhaust_stream, RuleBuilder
+from ..rules import RuleTree, RuleTreeExplorer, custom_merge
 
 
 def generate_css(rules):
@@ -43,28 +39,6 @@ def quotehtml(x):
     return s
 
 
-# def generate_html(description, rules):
-#     if isinstance(description, str):
-#         s = "<span>" + quotehtml(description) + "</span>"
-#     else:
-#         classes, parts = exhaust_stream(description)
-#         classes, parts = rules.premanipulate(classes, parts)
-#         props = rules.get_properties(classes)
-
-#         if props.get(":raw", False):
-#             strings = map(str, parts)
-#         else:
-#             strings = [generate_html(part, rules) for part in parts]
-
-#         s = rules.postmanipulate(classes, strings)
-#         s = "<span class='%s'>%s</span>" % (
-#             " ".join(classes),
-#             s)
-
-#     return s
-
-
-
 def generate_html(description, rules):
     if isinstance(description, str):
         s = "<span>" + quotehtml(description) + "</span>"
@@ -72,9 +46,6 @@ def generate_html(description, rules):
         classes, parts = exhaust_stream(description)
         rules = rules.explore(classes, parts)
         parts = rules.premanipulate(parts)
-
-        # classes, parts = rules.(classes, parts)
-        # props = rules.get_properties(classes)
 
         raw = rules.properties.get(":raw", False)
         if raw and raw[-1]:
@@ -96,38 +67,8 @@ class HTMLFormatter(Formatter):
     def __init__(self, rules, top = None):
         self.cssrules = OrderedDict()
         self.top = top
-        # self.rules = SimpleRules([])
         self.rules = RuleTree()
         self.assimilate_rules(rules)
-
-    # def assimilate_rules(self, rules):
-    #     for selector, props in rules:
-    #         raw_selector = escape_selector(selector)
-    #         if self.top:
-    #             selector = ".%s %s" % (self.top, raw_selector)
-    #         else:
-    #             selector = raw_selector
-    #         cls = False
-    #         orig_css = self.cssrules.get(selector, {})
-    #         css = {}
-    #         other = {}
-    #         for k, v in props.items():
-    #             if k == "!override_priority" and v and selector in self.cssrules:
-    #                 del self.cssrules[selector]
-    #             elif k.startswith(":"):
-    #                 if cls is False:
-    #                     cls = extract_sole_class(raw_selector)
-    #                 if cls is None:
-    #                     raise Exception("Cannot define property '%s' for selector '%s'. "
-    #                                     "Properties starting with ':' must be associated "
-    #                                     "to a single class selector."
-    #                                     % (k, raw_selector))
-    #                 other[k] = v
-    #             else:
-    #                 css[k] = v
-    #         custom_merge(orig_css, css)
-    #         self.rules.assimilate_rules([(cls, other)])
-    #         self.cssrules[selector] = orig_css
 
     def assimilate_rules(self, rules):
         for selector, props in rules:
@@ -136,7 +77,6 @@ class HTMLFormatter(Formatter):
                 selector = ".%s %s" % (self.top, raw_selector)
             else:
                 selector = raw_selector
-            # cls = False
             orig_css = self.cssrules.get(selector, {})
             css = {}
             other = {}
@@ -144,13 +84,6 @@ class HTMLFormatter(Formatter):
                 if k == "!override_priority" and v and selector in self.cssrules:
                     del self.cssrules[selector]
                 elif k.startswith(":"):
-                    # if cls is False:
-                    #     cls = extract_sole_class(raw_selector)
-                    # if cls is None:
-                    #     raise Exception("Cannot define property '%s' for selector '%s'. "
-                    #                     "Properties starting with ':' must be associated "
-                    #                     "to a single class selector."
-                    #                     % (k, raw_selector))
                     other[k] = v
                 else:
                     css[k] = v
@@ -164,7 +97,6 @@ class HTMLFormatter(Formatter):
         return s
 
     def translate(self, stream):
-        # html = generate_html(stream, self.rules)
         html = generate_html(stream, RuleTreeExplorer({}, [(0, False, self.rules)]))
         return html
 

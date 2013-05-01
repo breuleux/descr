@@ -23,12 +23,10 @@ class NotebookPrinter(Printer):
 
     def setup(self):
         s = self.formatter.setup()
-        # print(s)
         display_html(HTML(s))
 
     def write(self, stream):
         s = self.formatter.translate(stream)
-        # print(s)
         display_html(HTML(s))
 
 

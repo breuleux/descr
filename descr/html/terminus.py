@@ -26,7 +26,6 @@ class TerminusFormatter(HTMLFormatter):
         return "".join(lines)
 
     def translate(self, stream):
-        # html = generate_html(stream, self.rules)
         html = super(TerminusFormatter, self).translate(stream)
         return self.wrapesc(':h {x}'.format(x = html))
 
