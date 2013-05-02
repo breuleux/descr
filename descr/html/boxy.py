@@ -9,16 +9,25 @@ html_boxy = Layout()
 
 html_boxy.layout = dict(
 
+    # Note: the classes "scalar", "sequence" and "empty" are added by
+    # rules in descr.ruleset.basic, so make sure to include that
+    # ruleset if you want to make your own layout with rules based on
+    # these classes.
+
+    # When the layout is applied, we add the rulesets open + close, so
+    # that rules can be added to open without overriding those in
+    # close. For instance classes meant for highlighting will be in
+    # close so that they get priority over all the others.
+
     open = basic + HTMLRuleBuilder(
 
-        # Note that a class declaration like ".toplevel" will be
+        # Note: a class declaration like ".toplevel" will be
         # inserted before every selector below, so that the rules'
         # effect cannot "leak" outside of what we are displaying.  So
         # in effect, "" -> ".toplevel", ".{@str} > span" ->
         # ".toplevel .{@str} > span", and so on.
 
         # The following will therefore match the top level span:
-
         ("", {"display": "block"}),
 
         # And this will match all spans inside that:
@@ -27,19 +36,28 @@ html_boxy.layout = dict(
                   "font-family": "monospace"}),
 
         # Text must flow.
-        (".{text} span", {"display": "inline"}),
+        (".{text} *", {"display": "inline"}),
 
+        # scalar = @str, @int, @True, @False, ...
         (".{scalar}", {"text-align": "center",
                        "padding": "3px",
                        "margin": "3px"}),
+        # we add a double quote "" before an empty string
         (".{empty}.{@str}::before", {"content": '"\\"\\""'}),
 
         (".{sequence}", {"padding": "3px",
                          "margin": "3px"}),
-                         # ":before": lambda c, d: (({"raw"}, "&#x2205;"),) if not d else ()}),
+        # For empty strings we insert the symbol for an empty set and
+        # we remove borders. If you wish to differentiate types of
+        # sequences visually using borders, including empty ones, you
+        # might need to disable the second rule, for example:
+        # (".empty.sequence", {"!clear": True})
         (".{empty}.{sequence}::before", {"content": '"\\2205"'}),
         (".{empty}.{sequence}", {"border": "0px"}),
 
+        # Note: you can change the properties marked "vertical" to
+        # "horizontal" to display key/value pairs horizontally. You
+        # will have to change all three to be cross-browser.
         (".{assoc}", {":join": '<span class="assoc_separator"></span>',
                       "margin": "3px",
                       # Whitespace before "display" is a trick to have
@@ -80,6 +98,8 @@ html_boxy.layout = dict(
         ))
 
 
+# Rules for a "dark" theme (a black, or nearly black background is assumed).
+
 html_boxy.styles["dark"] = dict(
     open = HTMLRuleBuilder(
 
@@ -111,6 +131,8 @@ html_boxy.styles["dark"] = dict(
         ))
 
 
+# Rules for a "light" theme (a white, or nearly white background is assumed).
+
 html_boxy.styles["light"] = dict(
     open = HTMLRuleBuilder(
 
@@ -122,8 +144,9 @@ html_boxy.styles["light"] = dict(
         (".{@str}", {"color": "#a00"}),
         (".{empty}", {"color": "#888"}),
 
-        (".{sequence}", {"border": "2px solid #eee"}),
-        (".{sequence} > .{sequence}", {"border-bottom": "2px solid #"}),
+        (".{sequence}", {"border": "2px solid #eee",
+                         "border-bottom": "2px solid #888"}),
+        (".{fieldlist}", {"border-bottom": "2px solid #00f"}),
 
         (".{assoc_separator}", {"border": "2px solid #000"}),
 

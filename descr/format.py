@@ -1,10 +1,6 @@
 
 import re
-import sys
 import itertools
-from collections import defaultdict, OrderedDict
-from functools import partial
-
 from .registry import types_registry
 
 
