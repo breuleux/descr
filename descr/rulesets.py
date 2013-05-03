@@ -40,60 +40,23 @@ def _pull_field(classes, parts):
     # key->value pair of a dict.
 
     # ({"field", "+somelabel", classes...}, parts...)
-    # -> ({"assoc"}, ({fieldlabel}, "somelabel"), ({classes...}, parts...))
+    # -> ({"assoc", classes...},
+    #     ({fieldlabel}, "somelabel"),
+    #     ({"field", "+somelabel"}, parts...))
 
     # Automatically applied to all fields that are the immediate
     # children of a node with class "fieldlist" (ctrl+f "_pull_field"
     # to see how it's done)
+
     blocker = "block:field"
     if blocker in classes:
         return classes, parts
 
     field = [klass for klass in classes if klass.startswith("+")][0][1:]
     classes2 = (classes - {"field"}) | {blocker}
-    # return [({"assoc"},
-    #          ({"fieldlabel"}, field),
-    #          (classes2,) + tuple(parts))]
     return ({"assoc"} | classes2,
             [({"fieldlabel"}, field),
              ({"field", "+"+field},) + tuple(parts)])
-
-# def _rearrange_object(classes, parts, fieldlist = True):
-#     # Transform a node with the "object" class so that its label,
-#     # which is a class of the form "+label", is displayed, without the
-#     # "+". If there is no label, the type name is used instead
-#     # (e.g. "@myobj") ad verbatim (with the "@"). Then the fields are
-#     # placed in a node with class "fieldlist" which will allow the
-#     # rule implemented in _pull_field to trigger.
-
-#     # ({"object", "+somelabel", classes...} parts...)
-#     # -> ({"objectlabel"}, "somelabel") # if len(parts) == 0
-#     # -> ({"assoc"}, ({"objectlabel"}, "somelabel"),
-#     #                ({"fieldlist", "sequence"?, classes...}, parts...)) # otherwise
-#     # "sequence" is added as a class only if len(parts) > 1
-
-#     # Automatically applied to the class "object". (ctrl+f
-#     # "_rearrange_object" to see how it's done)
-
-#     possible_names = [klass for klass in classes if klass.startswith("+")]
-#     if possible_names:
-#         name = possible_names[0][1:]
-#     else:
-#         name = [klass for klass in classes if klass.startswith("@")][0]
-
-#     classes2 = classes.difference({"object"})
-#     if fieldlist:
-#         classes2.add("fieldlist")
-#     if len(parts) > 1:
-#         classes2.add("sequence")
-
-#     if not parts:
-#         return [({"objectlabel"}, name)]
-#     else:
-#         return [({"assoc"},
-#                  ({"objectlabel"}, name),
-#                  (classes2, )
-#                  + tuple(parts))]
 
 
 def _replace_object(classes, parts, fieldlist = True):
@@ -105,9 +68,9 @@ def _replace_object(classes, parts, fieldlist = True):
     # rule implemented in _pull_field to trigger.
 
     # ({"object", "+somelabel", classes...} parts...)
-    # -> ({"objectlabel"}, "somelabel") # if len(parts) == 0
+    # -> ({"objectlabel", classes...}, "somelabel") # if len(parts) == 0
     # -> ({"assoc"}, ({"objectlabel"}, "somelabel"),
-    #                ({"fieldlist", "sequence"?, classes...}, parts...)) # otherwise
+    #                ({"fieldlist", "sequence"?}, parts...)) # otherwise
     # "sequence" is added as a class only if len(parts) > 1
 
     # Automatically applied to the class "object". (ctrl+f
@@ -139,20 +102,35 @@ def _replace_object(classes, parts, fieldlist = True):
 
 
 def _post_frame(classes, parts):
+    # This is run after the children of a @frame object are processed
+    # in order to squeeze the function name into the header with the
+    # filename and line number. It's not very pretty.
+    # fname and location are descr.format.DescriptionProcessor objects.
     fname, location = parts
     rval = location
     rval.children[0].children.insert(0, fname)
     return [rval]
 
 
-
 def _extract_locations(classes, parts):
+    # Does the dirty job of taking a file number and a few line and
+    # column numbers, reading the file and formatting what they refer
+    # to.
+
+    # ({"location"}, filename, ((l1, c1)|startpos, (l2, c2)|endpos|None|"line"|"stripline")...)
+    # ->
+    # Something like this:
+    # [[{'source_header'},
+    #   ({'field', '+path', 'path'}, 'test.py'),
+    #   ({'source_loc'}, {'hl1'}, '146:5-7')],
+    #  [{'source_code'},
+    #   ({'L#144', 'W#3', 'lineno'}, ''), (set(), '\n'), ({'L#145', 'W#3', 'lineno'}, ''), (set(), 'try:\n'), ({'W#3', 'L#146', 'lineno'}, ''), (set(), '    '), ({'hl1'}, 'f()'), (set(), '\n'), ({'W#3', 'L#147', 'lineno'}, ''), (set(), '    # pr.write(object())\n'), (set(), ''), ({'W#3', 'L#148', 'lineno'}, ''), 'except:']]
 
     blocker = "block:location"
     if blocker in classes:
         return classes, parts
 
-    filename, *specs = parts
+    filename, specs = parts[0], parts[1:]
 
     ctx = 0
     for k in classes:
@@ -160,11 +138,16 @@ def _extract_locations(classes, parts):
             ctx = int(k[2:])
 
     try:
-        with open(filename) as f:
-            text = f.read()
+        f = open(filename)
+        text = f.read()
+        f.close()
     except IOError:
-        raise
-        return classes, ["Could not read file."]
+        return (classes,
+                [[{'source_header'},
+                  ({'field', '+path', 'path'}, filename),
+                  ({'source_loc'}, {'hl1'}, "???")],
+                 [{'source_code'}, "Could not read file."]])
+
     source = location.Source(text, filename)
 
     locs = []
@@ -196,39 +179,17 @@ def _extract_locations(classes, parts):
 
     rval = location.descr_locations(locs, ctx)
     c, p = exhaust_stream(rval)
-    # c |= {"location", blocker}
-    # c |= classes
-    # print(c)
     return c | {blocker}, p
 
 
-
-# def _extract_location(classes, parts):
-#     filename, (start, end) = parts
-#     if end is not None:
-#         raise Exception
-
-#     ctx = 0
-#     for k in classes:
-#         if k.startswith("C#"):
-#             ctx = int(k[2:])
-
-#     l1, c1 = start
-
-#     try:
-#         with open(filename) as f:
-#             text = f.read()
-#     except IOError:
-#         return ["Could not read file."]
-
-#     source = location.Source(text, filename)
-#     pos = source.fromlinecol(l1, c1)
-#     line = source.lines[l1 - 1]
-#     ll = len(line)
-#     loc = location.Location(source, (pos + ll - len(line.strip()),
-#                                      pos + ll))
-#     return [location.descr_locations([(loc, {"hl1"})], 3)]
-
+def _insert_lineno(c, d):
+    n, width = "", 3
+    for cls in c:
+        if cls.startswith("L#"):
+            n = cls[2:]
+        elif cls.startswith("W#"):
+            width = max(width, int(cls[2:]))
+    return [n.rjust(width)]
 
 
 basic = RuleBuilder(
@@ -252,16 +213,10 @@ basic = RuleBuilder(
     (".{fieldlist} > .{field}", {":replace": _pull_field}),
 
     # Location
-    (".{@frame}", {":-classes": "object",
-                   ":post": _post_frame}),
-
-    # (".{location}", {":rearrange": _extract_locations,
-    #                  ":-classes": "field"}),
+    (".{@traceback}, .{@frame}", {":-classes": "object"}),
+    (".{@frame}", {":post": _post_frame}),
     (".{location}", {":replace": _extract_locations,
                      ":-classes": "field"}),
-
-    (".{source_code}", {":+classes": "pre"}),
-
-
+    (".lineno", {":before": _insert_lineno}),
     )
 

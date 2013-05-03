@@ -1,14 +1,5 @@
 
 
-def insert_lineno(c, d):
-    n, width = "", 3
-    for cls in c:
-        if cls.startswith("L#"):
-            n = cls[2:]
-        elif cls.startswith("W#"):
-            width = int(cls[2:])
-    return [n.rjust(width)]
-
 
 def morsel(specifications):
 

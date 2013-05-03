@@ -148,9 +148,9 @@ class HTMLFormatter(Formatter):
         return s
 
     def translate(self, stream):
-        # html = generate_html(stream, RuleTreeExplorer({}, [(0, False, self.rules)]))
-        html = generate_html(DescriptionProcessor.process(stream,
-                                                          RuleTreeExplorer({}, [(0, False, self.rules)])))
+        expl = RuleTreeExplorer({}, [(0, False, self.rules)])
+        # html = generate_html(stream, expl)
+        html = generate_html(DescriptionProcessor.process(stream, expl))
         return str(html)
 
 

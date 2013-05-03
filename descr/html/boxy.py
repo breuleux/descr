@@ -42,7 +42,8 @@ html_boxy.layout = dict(
                       }),
 
         # scalar = @str, @int, @True, @False, ...
-        (".{scalar}", {"text-align": "center",
+        (".{scalar}", {":+classes": "pre",
+                       "text-align": "center",
                        "padding": "3px",
                        "margin": "3px"}),
         # we add a double quote "" before an empty string
@@ -106,61 +107,34 @@ html_boxy.layout = dict(
                       ":+classes": "vstack",
                       }),
 
+        # Rules related to printing tracebacks
+
         (".{@traceback}", {":+classes": "vstack",
-                # "display": "inline-box",
-                # " display": "-moz-inline-box",
-                # "  display": "-webkit-inline-box",
-                # "-webkit-box-align": "middle",
-                # "-moz-box-align": "middle",
-                # "box-align": "middle",
-                # "-webkit-box-orient": "horizontal",
-                # "-moz-box-orient": "horizontal",
-                # "box-orient": "horizontal",
-                # ":+classes": "stack",
-                # "-webkit-box-orient": "vertical",
-                # "-moz-box-orient": "vertical",
-                # "box-orient": "vertical",
-                           # "border": "10px solid red"
-                           }),
-
-        (".{@traceback} > *", {"display": "block",
-                           # "border": "10px solid green"
-                               }),
-
-        # (".{@traceback} > * > *", {"display": "block",
-        #                    # "border": "10px solid blue"
-        #                            }),
-
+                           ":join": make_joiner(HTMLNode({"traceback_separator"}, []))}),
+        (".{@traceback} > *", {"display": "block"}),
 
         (".source_excerpt", {":+classes": "vstack",
-                             "width": "100%"}),
+                             "width": "100%"
+                             }),
         (".source_excerpt > *", {"display": "block"}),
 
-        # # (".source_header", {":+classes": "hstack"}),
-        (".source_header", {#"display": "inline-block",
-                            "width": "98%",
-                            "background-color": "#222",
-                            }),
+        (".source_header", {"width": "98%"}),
+                            
         (".source_header > .path, .source_header > .source_loc",
          {"display": "block", "float": "right"}),
 
-        (".squash", {"border": "2px solid #888"}),
- 
-        (".{@traceback}", {":join": make_joiner(HTMLNode({"squash"}, [])),
-                           "border": "1px dashed #888"}),
-        # (".source_excerpt", {"border": "2px solid #444"}),
-        # (".source_header", {"border-bottom": "1px solid #888"}),
+        (".path, .source_loc, .{@frame} > .{+fname}", {":+classes": "scalar"}),
 
-        (".{@frame} > .{+fname}", {":+classes": "scalar"}),
-        (".path, .source_loc, .source_header > .{+fname}", {":+classes": "scalar"}),
-        (".source_header > .{+fname}", {":+classes": "hl"}),
-        (".path", {"color": "#fff"}),
-        (".{+fname} + .path::before", {"content": '"in "',
-                                       "color": "#aaa"}),
+        (".{+fname} + .path::before", {"content": '"in "'}),
         (".path + .source_loc::before", {"content": '"@"',
-                                         "color": "#aaa",
                                          "font-weight": "normal"}),
 
+        (".{source_code}", {":+classes": "pre"}),
+
+        (".lineno", {"padding-right": "5px",
+                     "margin-right": "10px",
+                     "display": "inline-block",
+                     "text-align": "right"}),
         ),
 
     close = HTMLRuleBuilder(
@@ -173,6 +147,12 @@ html_boxy.layout = dict(
         (".{magenta}", {"color": "#f8f"}),
         (".{cyan}", {"color": "#8ff"}),
         (".{white}", {"color": "#fff"}),
+
+        (".{hl}", {"font-weight": "bold"}),
+        (".{hl1}", {"font-weight": "bold"}),
+        (".{hl2}", {"font-weight": "bold"}),
+        (".{hl3}", {"font-weight": "bold"}),
+        (".{hlE}", {"font-weight": "bold"}),
 
         (".{par}", {":wrap": lambda x: HTMLNode({}, [x], tag = p)}),
         (".{line}", {":after": lambda a, b: [[{"raw"}, "<br/>"]]}),
@@ -203,13 +183,24 @@ html_boxy.styles["dark"] = dict(
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #88f"}),
         (".{fieldlabel}", {"color": "#f88", ":+classes": "scalar"}),
 
+        (".{@traceback}", {"border": "1px dashed #888"}),
+        (".traceback_separator", {"border": "2px solid #888"}),
+        (".source_header", {"background-color": "#222"}),
+        (".{+fname} + .path::before", {"color": "#aaa"}),
+        (".path + .source_loc::before", {"color": "#aaa"}),
+        (".lineno", {"border-right": "4px solid #88f"}),
+
+        (".{@Exception} .{objectlabel}", {"color": "#f00", "text-align": "left"}),
+        (".{@Exception} .{objectlabel} + .{assoc_separator}", {"border": "2px solid #f88"}),
+        (".{@Exception} .{fieldlist}", {"border-bottom": "4px solid #f88"}),
+        (".exception_message", {"display": "block"}),
         ),
     close = HTMLRuleBuilder(
         (".{hl}", {"font-weight": "bold"}),
-        (".{hl1}", {"color": "#ff8", "background-color": "#220", "font-weight": "bold"}),
-        (".{hl2}", {"color": "#8f8", "background-color": "#020", "font-weight": "bold"}),
-        (".{hl3}", {"color": "#88f", "background-color": "#004", "font-weight": "bold"}),
-        (".{hlE}", {"color": "#f88", "font-weight": "bold"}),
+        (".{hl1}", {"color": "#ff8", "background-color": "#220"}),
+        (".{hl2}", {"color": "#8f8", "background-color": "#020"}),
+        (".{hl3}", {"color": "#88f", "background-color": "#003"}),
+        (".{hlE}", {"color": "#f88", "background-color": "#300"}),
 
         (".hl.empty::before, .hl1.empty::before, .hl2.empty::before, .hl3.empty::before, .hlE.empty::before", {
                 "content": '"\\25B6"',
@@ -240,12 +231,23 @@ html_boxy.styles["light"] = dict(
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #00f"}),
         (".{fieldlabel}", {"color": "#a00", ":+classes": "scalar"}),
 
+        (".{@traceback}", {"border": "1px dashed #888"}),
+        (".traceback_separator", {"border": "2px solid #888"}),
+        (".source_header", {"background-color": "#eee"}),
+        (".{+fname} + .path::before", {"color": "#666"}),
+        (".path + .source_loc::before", {"color": "#666"}),
+        (".lineno", {"border-right": "4px solid #00f"}),
+
+        (".{@Exception} .{objectlabel}", {"color": "#f00", "text-align": "left"}),
+        (".{@Exception} .{objectlabel} + .{assoc_separator}", {"border": "2px solid #800"}),
+        (".{@Exception} .{fieldlist}", {"border-bottom": "4px solid #800"}),
+        (".exception_message", {"display": "block"}),
         ),
     close = HTMLRuleBuilder(
         (".{hl}", {"font-weight": "bold"}),
-        (".{hl1}", {"color": "#00f", "font-weight": "bold"}),
-        (".{hl2}", {"color": "#0a0", "font-weight": "bold"}),
-        (".{hl3}", {"color": "#a60", "font-weight": "bold"}),
-        (".{hlE}", {"color": "#f00", "font-weight": "bold"}),
+        (".{hl1}", {"color": "#00f", "background-color": "#eef"}),
+        (".{hl2}", {"color": "#0a0", "background-color": "#efe"}),
+        (".{hl3}", {"color": "#a60", "background-color": "#efc"}),
+        (".{hlE}", {"color": "#f00", "background-color": "#fee"}),
         )
     )

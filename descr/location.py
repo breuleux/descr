@@ -33,6 +33,18 @@ class Source(object):
         return self.linepos[line] + col
 
 
+def linecolstr(start, end):
+    (l1, c1), lc2 = start, end
+    if lc2 is not None:
+        l2, c2 = lc2
+    if lc2 is None or l1 == l2 and c1 == c2:
+        return ("%s:%s" % (l1, c1)) + ("<" if lc2 is None else "")
+    elif l1 == l2:
+        return "%s:%s-%s" % (l1, c1, c2)
+    else:
+        return "%s:%s-%s:%s" % (l1, c1, l2, c2)
+
+
 class Location(object):
     """
     Location object - meant to represent some code excerpt. It
@@ -79,15 +91,8 @@ class Location(object):
         the excerpt is a token not in the source text (e.g. one that
         was inserted by the parser), "<" will be appended to the end.
         """
-        ((l1, c1), lc2) = self.linecol()
-        if lc2 is not None:
-            l2, c2 = lc2
-        if lc2 is None or l1 == l2 and c1 == c2:
-            return ("%s:%s" % (l1, c1)) + ("<" if lc2 is None else "")
-        elif l1 == l2:
-            return "%s:%s-%s" % (l1, c1, c2)
-        else:
-            return "%s:%s-%s:%s" % (l1, c1, l2, c2)
+        lc1, lc2 = self.linecol()
+        return linecolstr(lc1, lc2)
 
     def __descr__(self):
         return descr_locations([self])
