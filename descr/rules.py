@@ -176,69 +176,76 @@ class RuleTreeExplorer(object):
         self.candidates = candidates
         self.properties = consult(candidates)
 
-    def explore(self, classes, *info):
+    def explore(self, classes, children):
         new = RuleTreeExplorer(classes, accumulate_candidates(classes, self.candidates))
+
         for prop, combine in [(":classes", lambda x, y: y),
                               (":+classes", lambda x, y: x | y),
-                              (":-classes", lambda x, y: x.difference(y)),
-                              (":&classes", lambda x, y: x & y)]:
+                              (":-classes", lambda x, y: x - y)]:
             for new_classes in new.properties.get(prop, ()):
                 if callable(new_classes):
-                    new_classes = new_classes(classes, *info)
+                    new_classes = new_classes(classes, children)
                 if isinstance(new_classes, str):
                     new_classes = {new_classes}
                 if new_classes:
                     new_classes = combine(classes, new_classes)
                     if new_classes != classes:
-                        return self.explore(new_classes, *info)
+                        return self.explore(new_classes, children)
         else:
-            return new
 
-    def premanipulate(self, parts):
+            for f in new.properties.get(":replace", ()):
+                new_classes, new_children = f(classes, children)
+                if new_classes != classes:
+                    return self.explore(new_classes, new_children)
+                else:
+                    children = new_children
+            else:
+                return new, children
 
-        props = self.properties
+    # def premanipulate(self, parts):
 
-        for rearrange in props.get(":rearrange", ()):
-            if callable(rearrange):
-                parts = rearrange(self.classes, parts)
-            elif isinstance(rearrange, str):
-                parts = (rearrange,)
-            elif rearrange is not None:
-                parts = rearrange
+    #     props = self.properties
 
-        before_acc = []
-        for before in props.get(":before", ()):
-            if callable(before):
-                before_acc = list(before(self.classes, parts)) + before_acc
-            if isinstance(before, str):
-                before_acc = [before] + before_acc
+    #     for rearrange in props.get(":rearrange", ()):
+    #         if callable(rearrange):
+    #             parts = rearrange(self.classes, parts)
+    #         elif isinstance(rearrange, str):
+    #             parts = (rearrange,)
+    #         elif rearrange is not None:
+    #             parts = rearrange
 
-        after_acc = []
-        for after in props.get(":after", ()):
-            if callable(after):
-                after_acc += list(after(self.classes, parts))
-            if isinstance(after, str):
-                after_acc += [after]
+    #     before_acc = []
+    #     for before in props.get(":before", ()):
+    #         if callable(before):
+    #             before_acc = list(before(self.classes, parts)) + before_acc
+    #         if isinstance(before, str):
+    #             before_acc = [before] + before_acc
 
-        if before_acc or after_acc:
-            parts = itertools.chain(before_acc, parts, after_acc)
+    #     after_acc = []
+    #     for after in props.get(":after", ()):
+    #         if callable(after):
+    #             after_acc += list(after(self.classes, parts))
+    #         if isinstance(after, str):
+    #             after_acc += [after]
 
-        return parts
+    #     if before_acc or after_acc:
+    #         parts = itertools.chain(before_acc, parts, after_acc)
 
-    def postmanipulate(self, parts):
+    #     return parts
 
-        props = self.properties
+    # def postmanipulate(self, node):
 
-        joiner = props.get(":join", None)
-        joiner = joiner[0] if joiner else "".join
-        if isinstance(joiner, str):
-            joiner = joiner.join
+    #     props = self.properties
 
-        s = joiner(parts)
+    #     for f in props.get(":shuffle", ()):
+    #         node = f(node)
 
-        for wrapper in props.get(":wrap", ()):
-            s = wrapper(s)
+    #     for f in props.get(":join", ()):
+    #         node = f(node)
 
-        return s
+    #     for f in props.get(":wrap", ()):
+    #         node = f(node)
+
+    #     return node
 
 

@@ -2,7 +2,7 @@
 import re
 
 from collections import OrderedDict
-from ..format import Formatter, exhaust_stream, RuleBuilder
+from ..format import Formatter, exhaust_stream, RuleBuilder, DescriptionProcessor
 from ..rules import RuleTree, RuleTreeExplorer, custom_merge
 
 
@@ -31,7 +31,6 @@ def quotehtml(x):
     # TODO: other characters
     s = str(x)
     for orig, repl in [("&", "&amp;"),
-                       (" ", "&nbsp;"),
                        ("<", "&lt;"),
                        (">", "&gt;"),
                        ('"', "&quot;")]:
@@ -39,26 +38,78 @@ def quotehtml(x):
     return s
 
 
-def generate_html(description, rules):
+class HTMLNode(object):
+
+    def __init__(self, classes, children, tag = "span"):
+        self.tag = tag
+        self.classes = classes
+        self.children = children
+
+    def copy(self):
+        return HTMLNode(set(self.classes),
+                        list(self.children),
+                        self.tag)
+
+    def __str__(self):
+        return '<%s class="%s">%s</%s>' % (
+            self.tag,
+            " ".join(self.classes),
+            "".join(map(str, self.children)),
+            self.tag)
+
+
+
+def generate_html(description):
+    if description is None or isinstance(description, (int, float, bool)):
+        description = str(description)
+
     if isinstance(description, str):
-        s = "<span>" + quotehtml(description) + "</span>"
+        node = HTMLNode({}, [quotehtml(description)])
     else:
-        classes, parts = exhaust_stream(description)
-        rules = rules.explore(classes, parts)
-        parts = rules.premanipulate(parts)
+        nodes = [generate_html(child)
+                   for child in description.children]
+        node = HTMLNode(description.classes, nodes)
+        props = description.properties
+        for f in props.get(":shuffle", ()):
+            node = f(node)
+        for f in props.get(":join", ()):
+            node = f(node)
+        for f in props.get(":wrap", ()):
+            node = f(node)
 
-        raw = rules.properties.get(":raw", False)
-        if raw and raw[-1]:
-            strings = map(str, parts)
-        else:
-            strings = [generate_html(part, rules) for part in parts]
+    return node
 
-        s = rules.postmanipulate(strings)
-        s = "<span class='%s'>%s</span>" % (
-            " ".join(rules.classes),
-            s)
 
-    return s
+
+
+# def generate_html(description, rules):
+#     if description is None or isinstance(description, (int, float, bool)):
+#         description = str(description)
+
+#     if isinstance(description, str):
+#         # s = "<span>" + quotehtml(description) + "</span>"
+#         s = HTMLNode({}, [quotehtml(description)])
+#     else:
+#         classes, parts = exhaust_stream(description)
+#         rules = rules.explore(classes, parts)
+#         parts = rules.premanipulate(parts)
+
+#         raw = rules.properties.get(":raw", False)
+#         if raw and raw[-1]:
+#             children = map(str, parts)
+#         else:
+#             children = [generate_html(part, rules) for part in parts]
+
+#         # children = rules.postmanipulate(rules.classes, children)
+#         s = HTMLNode(rules.classes, children)
+#         s = rules.postmanipulate(s)
+
+#         # s = rules.postmanipulate(strings)
+#         # s = "<span class='%s'>%s</span>" % (
+#         #     " ".join(rules.classes),
+#         #     s)
+
+#     return s
 
 
 
@@ -97,8 +148,10 @@ class HTMLFormatter(Formatter):
         return s
 
     def translate(self, stream):
-        html = generate_html(stream, RuleTreeExplorer({}, [(0, False, self.rules)]))
-        return html
+        # html = generate_html(stream, RuleTreeExplorer({}, [(0, False, self.rules)]))
+        html = generate_html(DescriptionProcessor.process(stream,
+                                                          RuleTreeExplorer({}, [(0, False, self.rules)])))
+        return str(html)
 
 
 class HTMLRuleBuilder(RuleBuilder):
@@ -120,3 +173,15 @@ class HTMLRuleBuilder(RuleBuilder):
         else:
             return getattr(super(HTMLRuleBuilder, self), attr)
 
+
+def make_joiner(s):
+    def join(node):
+        if not node.children:
+            return node
+        children = [node.children[0]]
+        for child in node.children[1:]:
+            children.append(s)
+            children.append(child)
+        node.children = children
+        return HTMLNode(node.classes, children, node.tag)
+    return join

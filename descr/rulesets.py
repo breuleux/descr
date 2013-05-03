@@ -1,5 +1,7 @@
 
-from .format import RuleBuilder
+from . import location
+from .format import RuleBuilder, exhaust_stream
+from .highlight import highlight_lines
 
 
 # Class enrichment functions. The return value is a set of classes to
@@ -10,10 +12,10 @@ from .format import RuleBuilder
 def _check_empty_str(classes, parts):
     # We may display empty strings differently.
     # ({"@str"}, "") -> ({"@str", "empty"}, "")
-    if parts[0]:
-        return {}
-    else:
+    if parts[0] == "":
         return {"empty"}
+    else:
+        return {}
 
 def _check_empty_sequence(classes, parts):
     # We may display empty sequences differently.
@@ -89,6 +91,109 @@ def _rearrange_object(classes, parts, fieldlist = True):
                  + tuple(parts))]
 
 
+# def _rearrange_frame(classes, parts):
+#     # for p in parts:
+#     #     print(p)
+#     fname, location = parts
+#     # print(fname)
+#     # print(location)
+#     results = _extract_locations(*exhaust_stream(location))[0]
+#     results[1].insert(0, fname)
+#     return [results]
+
+def _post_frame(classes, parts):
+    fname, location = parts
+    rval = location
+    rval.children[0].children.insert(0, fname)
+    return [rval]
+
+
+
+def _extract_locations(classes, parts):
+
+    blocker = "_extract_locations_blocker"
+    if blocker in classes:
+        return classes, parts
+
+    filename, *specs = parts
+
+    ctx = 0
+    for k in classes:
+        if k.startswith("C#"):
+            ctx = int(k[2:])
+
+    try:
+        with open(filename) as f:
+            text = f.read()
+    except IOError:
+        raise
+        return classes, ["Could not read file."]
+    source = location.Source(text, filename)
+
+    locs = []
+
+    for spec in specs:
+        classes1, (start, end) = exhaust_stream(spec)
+
+        if isinstance(start, tuple):
+            l1, c1 = start
+            start = source.fromlinecol(l1, c1)
+        else:
+            l1, c1 = source.linecol(start)
+
+        if end is None:
+            end = start
+        elif end == "line":
+            line = source.lines[l1 - 1]
+            end = start + len(line)
+        elif end == "stripline":
+            line = source.lines[l1 - 1]
+            ll = len(line)
+            end = start + len(line.rstrip())
+            start = start + ll - len(line.lstrip())
+        elif isinstance(end, tuple):
+            end = source.fromlinecol(*end)
+
+        loc = location.Location(source, (start, end))
+        locs.append((loc, classes1))
+
+    rval = location.descr_locations(locs, ctx)
+    c, p = exhaust_stream(rval)
+    # c |= {"location", blocker}
+    # c |= classes
+    # print(c)
+    return c, p
+
+
+
+# def _extract_location(classes, parts):
+#     filename, (start, end) = parts
+#     if end is not None:
+#         raise Exception
+
+#     ctx = 0
+#     for k in classes:
+#         if k.startswith("C#"):
+#             ctx = int(k[2:])
+
+#     l1, c1 = start
+
+#     try:
+#         with open(filename) as f:
+#             text = f.read()
+#     except IOError:
+#         return ["Could not read file."]
+
+#     source = location.Source(text, filename)
+#     pos = source.fromlinecol(l1, c1)
+#     line = source.lines[l1 - 1]
+#     ll = len(line)
+#     loc = location.Location(source, (pos + ll - len(line.strip()),
+#                                      pos + ll))
+#     return [location.descr_locations([(loc, {"hl1"})], 3)]
+
+
+
 basic = RuleBuilder(
 
     # booleans, integers, strings, etc. will be supplemented wtih the
@@ -102,11 +207,24 @@ basic = RuleBuilder(
      {":+classes": "sequence"}),
 
     # Check for empty strings and containers
-    (".{@str}", {":+classes": _check_empty_str}),
+    (".{@str}, .{hl}, .{hl1}, .{hl2}, .{hl3}, .{hlE}", {":+classes": _check_empty_str}),
     (".{sequence}", {":+classes": _check_empty_sequence}),
 
     # Rules to pretty print objects a bit like dicts
-    (".{object}", {":rearrange": _rearrange_object}),
-    (".{fieldlist} > .{field}", {":rearrange": _pull_field})
+    # (".{object}", {":rearrange": _rearrange_object}),
+    # (".{fieldlist} > .{field}", {":rearrange": _pull_field}),
+
+    # Location
+    (".{@frame}", {":-classes": "object",
+                   ":post": _post_frame}),
+
+    # (".{location}", {":rearrange": _extract_locations,
+    #                  ":-classes": "field"}),
+    (".{location}", {":replace": _extract_locations,
+                     ":-classes": "field"}),
+
+    (".{source_code}", {":+classes": "pre"}),
+
+
     )
 

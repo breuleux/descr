@@ -4,6 +4,11 @@ import itertools
 from .registry import types_registry
 
 
+# A: class modification
+# B: rearrange prior state
+# C: recursively apply the rules
+# D: post-processing
+
 def exhaust_stream(stream):
     classes = set()
     parts = []
@@ -28,6 +33,125 @@ def exhaust_stream(stream):
                  for part in parts]
 
     return classes, parts
+
+
+class DescriptionProcessor(object):
+
+    @classmethod
+    def process(cls, obj, parent_rules):
+        if isinstance(obj, (str, int, float)):
+            return obj
+        elif isinstance(obj, (set, frozenset)):
+            raise ValueError("Not expecting a set here.", obj)
+        else:
+            return cls(obj, parent_rules)
+
+    def __init__(self, description, parent_rules):
+        classes, children = exhaust_stream(description)
+        rules, children = parent_rules.explore(classes, children)
+        self.rules = rules
+        self.classes = rules.classes
+        self.properties = rules.properties
+        self.children = children
+        self.phase1()
+        self.phase2()
+        self.phase3()
+
+    def phase1(self):
+
+        props = self.properties
+
+        for f in props.get(":rearrange", ()):
+            self.children = f(self.classes, self.children)
+
+        before_acc = []
+        for f in props.get(":before", ()):
+            before_acc = list(f(self.classes, self.children)) + before_acc
+
+        after_acc = []
+        for f in props.get(":after", ()):
+            after_acc += list(f(self.classes, self.children))
+
+        if before_acc or after_acc:
+            self.children = list(itertools.chain(before_acc, self.children, after_acc))
+
+    def phase2(self):
+        raw = self.properties.get(":raw", False)
+
+        if raw and raw[-1]:
+            self.children = list(map(str, parts))
+        else:
+            self.children = [self.process(child, self.rules)
+                             for child in self.children]
+
+    def phase3(self):
+
+        props = self.properties
+
+        for f in props.get(":post", ()):
+            self.children = f(self.classes, self.children)
+
+
+
+
+# class Description(object):
+
+#     def __init__(self, description, rules):
+#         self.classes = {}
+#         self.gen = iter(description)
+#         self.children = []
+#         self.finished = False
+
+#     def _next(self):
+#         child = next(self.gen)
+#         if isinstance(child, (str, int, float, bool)) or child is None:
+#             self.children.append(child)
+#         elif isinstance(child, (set, frozenset)):
+#             self.classes.add(child)
+#         elif isinstance(child, dict):
+#             self.classes |= entry.get(True, {})
+#             self.classes -= entry.get(False, {})
+#         else:
+#             self.children.append(Description(child, rules))
+
+#     def next(self):
+#         try:
+#             self._next()
+#         except StopIteration:
+#             self.finished = True
+#             raise
+
+#     def exhaust(self):
+#         if self.finished:
+#             return
+#         try:
+#             while True:
+#                 self.next()
+#         except StopIteration:
+#             self.finished = True
+#             return
+
+#     def get_up_to(self, n):
+#         if self.finished or n < len(self.children):
+#             return
+#         try:
+#             while n > len(self.children):
+#                 self.next()
+#         except StopIteration:
+#             self.finished = True
+#             return
+
+#     def __getitem__(self, item):
+#         if isinstance(item, slice):
+#             self.get_up_to(item.stop)
+#         else:
+#             self.get_up_to(item)
+#         return self.children[item]
+
+#     def process(self):
+        
+
+
 
 
 class Formatter(object):
@@ -74,7 +198,7 @@ class AlwaysSetupPrinter(Printer):
 
     def write(self, stream):
         self.setup()
-        self.write(stream)
+        super(AlwaysSetupPrinter, self).write(stream)
 
 
 class dict2(dict):

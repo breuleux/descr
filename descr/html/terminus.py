@@ -1,6 +1,6 @@
 
 import sys
-from ..format import descr, Printer
+from ..format import descr, Printer, AlwaysSetupPrinter
 from .core import HTMLFormatter, generate_html
 from .boxy import html_boxy
 

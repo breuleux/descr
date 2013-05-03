@@ -1,7 +1,7 @@
 
 import sys
 from ..format import Layout
-from .core import HTMLRuleBuilder
+from .core import HTMLRuleBuilder, HTMLNode, make_joiner
 from ..rulesets import basic
 
 
@@ -35,8 +35,11 @@ html_boxy.layout = dict(
                   "vertical-align": "middle",
                   "font-family": "monospace"}),
 
-        # Text must flow.
+        # For text.
         (".{text} *", {"display": "inline"}),
+        (".{pre} *", {"display": "inline",
+                      "white-space": "pre"
+                      }),
 
         # scalar = @str, @int, @True, @False, ...
         (".{scalar}", {"text-align": "center",
@@ -55,29 +58,108 @@ html_boxy.layout = dict(
         (".{empty}.{sequence}::before", {"content": '"\\2205"'}),
         (".{empty}.{sequence}", {"border": "0px"}),
 
-        # Note: you can change the properties marked "vertical" to
-        # "horizontal" to display key/value pairs horizontally. You
-        # will have to change all three to be cross-browser.
-        (".{assoc}", {":join": '<span class="assoc_separator"></span>',
-                      "margin": "3px",
-                      # Whitespace before "display" is a trick to have
-                      # several entries for it in the CSS (since
-                      # whitespace is significant here but not in the
-                      # stylesheet). firefox and webkit will only see
-                      # this property when prefixed with -moz- or
-                      # -webkit-
-                      "display": "inline-box",
-                      " display": "-moz-inline-box",
-                      "  display": "-webkit-inline-box",
-                      "-webkit-box-align": "middle",
-                      "-webkit-box-orient": "vertical",
-                      "-moz-box-align": "middle",
-                      "-moz-box-orient": "vertical",
-                      "box-align": "middle",
-                      "box-orient": "vertical",
+
+        (".stack", {
+                "margin": "3px",
+                # Whitespace before "display" is a trick to have
+                # several entries for it in the CSS (since
+                # whitespace is significant here but not in the
+                # stylesheet). firefox and webkit will only see
+                # this property when prefixed with -moz- or
+                # -webkit-
+                "display": "inline-box",
+                " display": "-moz-inline-box",
+                "  display": "-webkit-inline-box",
+                "-webkit-box-align": "middle",
+                "-moz-box-align": "middle",
+                "box-align": "middle",
+                "-webkit-box-orient": "horizontal",
+                "-moz-box-orient": "horizontal",
+                "box-orient": "horizontal",
+                }),
+
+        (".vstack", {
+                ":+classes": "stack",
+                "-webkit-box-orient": "vertical",
+                "-moz-box-orient": "vertical",
+                "box-orient": "vertical",
+                }),
+
+        (".hstack", {
+                ":+classes": "stack",
+                "-webkit-box-orient": "horizontal",
+                "-moz-box-orient": "horizontal",
+                "box-orient": "horizontal",
+                }),
+
+        (".{stack} > span", {"display": "block",
+                             "margin": "0px",
+                             # "width": "100%"
+                             }),
+
+
+        # Note: to display key/value pairs horizontally you can change
+        # vstack to hstack. You might have to add a :-classes
+        # instruction to remove vstack if you try to do it
+        # programmatically.
+        (".{assoc}", {":join": make_joiner(HTMLNode({"assoc_separator"}, [])),
+                      ":+classes": "vstack",
                       }),
-        (".{assoc} > span", {"display": "block",
-                             "margin": "0px"}),
+
+        (".{@traceback}", {":+classes": "vstack",
+                # "display": "inline-box",
+                # " display": "-moz-inline-box",
+                # "  display": "-webkit-inline-box",
+                # "-webkit-box-align": "middle",
+                # "-moz-box-align": "middle",
+                # "box-align": "middle",
+                # "-webkit-box-orient": "horizontal",
+                # "-moz-box-orient": "horizontal",
+                # "box-orient": "horizontal",
+                # ":+classes": "stack",
+                # "-webkit-box-orient": "vertical",
+                # "-moz-box-orient": "vertical",
+                # "box-orient": "vertical",
+                           # "border": "10px solid red"
+                           }),
+
+        (".{@traceback} > *", {"display": "block",
+                           # "border": "10px solid green"
+                               }),
+
+        # (".{@traceback} > * > *", {"display": "block",
+        #                    # "border": "10px solid blue"
+        #                            }),
+
+
+        (".source_excerpt", {":+classes": "vstack",
+                             "width": "100%"}),
+        (".source_excerpt > *", {"display": "block"}),
+
+        # # (".source_header", {":+classes": "hstack"}),
+        (".source_header", {#"display": "inline-block",
+                            "width": "98%",
+                            "background-color": "#222",
+                            }),
+        (".source_header > .path, .source_header > .source_loc",
+         {"display": "block", "float": "right"}),
+
+        (".squash", {"border": "2px solid #888"}),
+ 
+        (".{@traceback}", {":join": make_joiner(HTMLNode({"squash"}, [])),
+                           "border": "1px dashed #888"}),
+        # (".source_excerpt", {"border": "2px solid #444"}),
+        # (".source_header", {"border-bottom": "1px solid #888"}),
+
+        (".{@frame} > .{+fname}", {":+classes": "scalar"}),
+        (".path, .source_loc, .source_header > .{+fname}", {":+classes": "scalar"}),
+        (".source_header > .{+fname}", {":+classes": "hl"}),
+        (".path", {"color": "#fff"}),
+        (".{+fname} + .path::before", {"content": '"in "',
+                                       "color": "#aaa"}),
+        (".path + .source_loc::before", {"content": '"@"',
+                                         "color": "#aaa",
+                                         "font-weight": "normal"}),
 
         ),
 
@@ -92,8 +174,8 @@ html_boxy.layout = dict(
         (".{cyan}", {"color": "#8ff"}),
         (".{white}", {"color": "#fff"}),
 
-        (".{par}", {":wrap": lambda x: "<p>%s</p>" % x}),
-        (".{line}", {":after": [[{"raw"}, "<br/>"]]}),
+        (".{par}", {":wrap": lambda x: HTMLNode({}, [x], tag = p)}),
+        (".{line}", {":after": lambda a, b: [[{"raw"}, "<br/>"]]}),
         (".{raw}", {":raw": True}),
         ))
 
@@ -124,10 +206,14 @@ html_boxy.styles["dark"] = dict(
         ),
     close = HTMLRuleBuilder(
         (".{hl}", {"font-weight": "bold"}),
-        (".{hl1}", {"color": "#88f", "font-weight": "bold"}),
-        (".{hl2}", {"color": "#8f8", "font-weight": "bold"}),
-        (".{hl3}", {"color": "#ff8", "font-weight": "bold"}),
+        (".{hl1}", {"color": "#ff8", "background-color": "#220", "font-weight": "bold"}),
+        (".{hl2}", {"color": "#8f8", "background-color": "#020", "font-weight": "bold"}),
+        (".{hl3}", {"color": "#88f", "background-color": "#004", "font-weight": "bold"}),
         (".{hlE}", {"color": "#f88", "font-weight": "bold"}),
+
+        (".hl.empty::before, .hl1.empty::before, .hl2.empty::before, .hl3.empty::before, .hlE.empty::before", {
+                "content": '"\\25B6"',
+                }),
         ))
 
 
