@@ -28,12 +28,11 @@ def _check_empty_sequence(classes, parts):
 
 # Functions to reorganize nodes with specific classes.
 
-# Used with property ":rearrange" on the appropriate selector.
+# Used with property ":replace" on the appropriate selector.
 
-# Note: the return value of these functions must be an iterable of
-# nodes and *cannot contain classes* (read: len(x for x in rval if
-# isinstance(x, set)) must be equal to zero). We can however return an
-# iterable with a single node in it.
+# Note: the return value of these functions must be a set of classes
+# and a list of new children for the node. These children cannot
+# contain sets.
 
 def _pull_field(classes, parts):
     # Changes a field node into a node that will display its label
@@ -46,14 +45,58 @@ def _pull_field(classes, parts):
     # Automatically applied to all fields that are the immediate
     # children of a node with class "fieldlist" (ctrl+f "_pull_field"
     # to see how it's done)
+    blocker = "block:field"
+    if blocker in classes:
+        return classes, parts
 
     field = [klass for klass in classes if klass.startswith("+")][0][1:]
-    classes2 = classes.difference({"field"})
-    return [({"assoc"},
-             ({"fieldlabel"}, field),
-             (classes2,) + tuple(parts))]
+    classes2 = (classes - {"field"}) | {blocker}
+    # return [({"assoc"},
+    #          ({"fieldlabel"}, field),
+    #          (classes2,) + tuple(parts))]
+    return ({"assoc"} | classes2,
+            [({"fieldlabel"}, field),
+             ({"field", "+"+field},) + tuple(parts)])
 
-def _rearrange_object(classes, parts, fieldlist = True):
+# def _rearrange_object(classes, parts, fieldlist = True):
+#     # Transform a node with the "object" class so that its label,
+#     # which is a class of the form "+label", is displayed, without the
+#     # "+". If there is no label, the type name is used instead
+#     # (e.g. "@myobj") ad verbatim (with the "@"). Then the fields are
+#     # placed in a node with class "fieldlist" which will allow the
+#     # rule implemented in _pull_field to trigger.
+
+#     # ({"object", "+somelabel", classes...} parts...)
+#     # -> ({"objectlabel"}, "somelabel") # if len(parts) == 0
+#     # -> ({"assoc"}, ({"objectlabel"}, "somelabel"),
+#     #                ({"fieldlist", "sequence"?, classes...}, parts...)) # otherwise
+#     # "sequence" is added as a class only if len(parts) > 1
+
+#     # Automatically applied to the class "object". (ctrl+f
+#     # "_rearrange_object" to see how it's done)
+
+#     possible_names = [klass for klass in classes if klass.startswith("+")]
+#     if possible_names:
+#         name = possible_names[0][1:]
+#     else:
+#         name = [klass for klass in classes if klass.startswith("@")][0]
+
+#     classes2 = classes.difference({"object"})
+#     if fieldlist:
+#         classes2.add("fieldlist")
+#     if len(parts) > 1:
+#         classes2.add("sequence")
+
+#     if not parts:
+#         return [({"objectlabel"}, name)]
+#     else:
+#         return [({"assoc"},
+#                  ({"objectlabel"}, name),
+#                  (classes2, )
+#                  + tuple(parts))]
+
+
+def _replace_object(classes, parts, fieldlist = True):
     # Transform a node with the "object" class so that its label,
     # which is a class of the form "+label", is displayed, without the
     # "+". If there is no label, the type name is used instead
@@ -68,7 +111,11 @@ def _rearrange_object(classes, parts, fieldlist = True):
     # "sequence" is added as a class only if len(parts) > 1
 
     # Automatically applied to the class "object". (ctrl+f
-    # "_rearrange_object" to see how it's done)
+    # "_replace_object" to see how it's done)
+
+    blocker = "block:object"
+    if blocker in classes:
+        return classes, parts
 
     possible_names = [klass for klass in classes if klass.startswith("+")]
     if possible_names:
@@ -76,30 +123,20 @@ def _rearrange_object(classes, parts, fieldlist = True):
     else:
         name = [klass for klass in classes if klass.startswith("@")][0]
 
-    classes2 = classes.difference({"object"})
-    if fieldlist:
-        classes2.add("fieldlist")
-    if len(parts) > 1:
-        classes2.add("sequence")
+    classes2 = (classes - {"object"}) | {blocker}
 
     if not parts:
-        return [({"objectlabel"}, name)]
+        return {"objectlabel"} | classes2, [name]
     else:
-        return [({"assoc"},
-                 ({"objectlabel"}, name),
-                 (classes2, )
-                 + tuple(parts))]
+        flclasses = set()
+        if fieldlist:
+            flclasses.add("fieldlist")
+        if len(parts) > 1:
+            flclasses.add("sequence")
+        return ({"assoc"} | classes2,
+                [({"objectlabel"}, name),
+                 (flclasses,) + tuple(parts)])
 
-
-# def _rearrange_frame(classes, parts):
-#     # for p in parts:
-#     #     print(p)
-#     fname, location = parts
-#     # print(fname)
-#     # print(location)
-#     results = _extract_locations(*exhaust_stream(location))[0]
-#     results[1].insert(0, fname)
-#     return [results]
 
 def _post_frame(classes, parts):
     fname, location = parts
@@ -111,7 +148,7 @@ def _post_frame(classes, parts):
 
 def _extract_locations(classes, parts):
 
-    blocker = "_extract_locations_blocker"
+    blocker = "block:location"
     if blocker in classes:
         return classes, parts
 
@@ -162,7 +199,7 @@ def _extract_locations(classes, parts):
     # c |= {"location", blocker}
     # c |= classes
     # print(c)
-    return c, p
+    return c | {blocker}, p
 
 
 
@@ -211,8 +248,8 @@ basic = RuleBuilder(
     (".{sequence}", {":+classes": _check_empty_sequence}),
 
     # Rules to pretty print objects a bit like dicts
-    # (".{object}", {":rearrange": _rearrange_object}),
-    # (".{fieldlist} > .{field}", {":rearrange": _pull_field}),
+    (".{object}", {":replace": _replace_object}),
+    (".{fieldlist} > .{field}", {":replace": _pull_field}),
 
     # Location
     (".{@frame}", {":-classes": "object",

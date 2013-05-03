@@ -3,9 +3,6 @@ import itertools
 from collections import defaultdict
 import cssselect as cs
 
-# from descr import boxy_terminus
-# pr = boxy_terminus()
-
 
 def custom_merge(orig, new, merge = None):
     additions = {}
@@ -201,51 +198,3 @@ class RuleTreeExplorer(object):
                     children = new_children
             else:
                 return new, children
-
-    # def premanipulate(self, parts):
-
-    #     props = self.properties
-
-    #     for rearrange in props.get(":rearrange", ()):
-    #         if callable(rearrange):
-    #             parts = rearrange(self.classes, parts)
-    #         elif isinstance(rearrange, str):
-    #             parts = (rearrange,)
-    #         elif rearrange is not None:
-    #             parts = rearrange
-
-    #     before_acc = []
-    #     for before in props.get(":before", ()):
-    #         if callable(before):
-    #             before_acc = list(before(self.classes, parts)) + before_acc
-    #         if isinstance(before, str):
-    #             before_acc = [before] + before_acc
-
-    #     after_acc = []
-    #     for after in props.get(":after", ()):
-    #         if callable(after):
-    #             after_acc += list(after(self.classes, parts))
-    #         if isinstance(after, str):
-    #             after_acc += [after]
-
-    #     if before_acc or after_acc:
-    #         parts = itertools.chain(before_acc, parts, after_acc)
-
-    #     return parts
-
-    # def postmanipulate(self, node):
-
-    #     props = self.properties
-
-    #     for f in props.get(":shuffle", ()):
-    #         node = f(node)
-
-    #     for f in props.get(":join", ()):
-    #         node = f(node)
-
-    #     for f in props.get(":wrap", ()):
-    #         node = f(node)
-
-    #     return node
-
-

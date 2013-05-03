@@ -1,5 +1,6 @@
 
-from types import FunctionType, MethodType
+import traceback
+from types import FunctionType, MethodType, TracebackType
 NoneType = type(None)
 
 
@@ -28,6 +29,25 @@ def iter_with_classes(*classes):
         return (classes,) + tuple(map(recurse, datum))
     return f
 
+def format_traceback(tb, recurse):
+    elements = [{"@traceback", "+traceback", "object"}]
+    while tb is not None:
+        frame = tb.tb_frame
+        lineno = tb.tb_lineno
+        code = frame.f_code
+        fname = code.co_name
+        filename = code.co_filename
+        tb = tb.tb_next
+        elements.append(
+            ({"@frame", "object"},
+             ({"+fname", "field"},
+              fname),
+             ({"+location", "field", "location"},
+              filename,
+              ({"hl1"}, (lineno, 1), "stripline"))))
+    return elements
+
+
 types_registry = {
     tuple: iter_with_classes("@tuple"),
     list: iter_with_classes("@list"),
@@ -41,4 +61,6 @@ types_registry = {
     str: str_with_classes("@str"),
 
     NoneType: classes("@None"),
+
+    TracebackType: format_traceback,
 }

@@ -1,4 +1,5 @@
 
+
 def insert_lineno(c, d):
     n, width = "", 3
     for cls in c:
@@ -55,38 +56,6 @@ def morsel(specifications):
             spans.append([end2, start, []])
             spans.append([start, end, attribute])
 
-
-
-    # def insert_span(spans, new):
-    #     start, end, attribute = new
-    #     attribute = [attribute]
-    #     for i, other in enumerate(spans):
-    #         start2, end2, attribute2 = other
-    #         if start2 == end2:
-    #             continue
-    #         if start2 <= start < end2:
-    #             other[1] = start
-    #             i += 1
-    #             if start == end:
-    #                 spans.insert(i, [start, end, attribute2 + attribute])
-    #                 i += 1
-    #             else:
-    #                 m = min(end, end2)
-    #                 if start != m:
-    #                     spans.insert(i, [start, m, attribute2 + attribute])
-    #                     i += 1
-
-    #             if end2 > end:
-    #                 spans.insert(i, [end, end2, attribute2])
-    #             elif end > end2:
-    #                 spans.insert(i, [end2, end, attribute])
-
-    #             break
-    #     else:
-    #         spans.append([end2, start, []])
-    #         spans.append([start, end, attribute])
-
-
     leftmost = min(start for start, end, attribute in specifications)
     rightmost = max(end for start, end, attribute in specifications)
 
@@ -100,7 +69,6 @@ def morsel(specifications):
 def highlight(text, locations, offset = 0, compound_classes = False):
 
     locations = morsel(locations)
-    # pr(locations)
     results = []
     i = 0
     lt = len(text)
@@ -140,45 +108,4 @@ def highlight_lines(lines, locations, lineno = 0, offset = 0, **kwargs):
         k += 1
 
     return highlight("\n".join(lines), locations, offset, **kwargs)
-
-
-
-
-
-
-
-# def standardize_location(filename, locations):
-#     try:
-#         with open(filename) as f:
-            
-
-
-
-def lc_to_pos(lines, l_offset, l, c):
-    l -= l_offset
-    return sum(map(len(lines[:l]))) + c
-
-
-def _extract_location(classes, parts):
-    filename, (start, end) = parts
-    if end is not None:
-        raise Exception
-
-    ctx = 0
-    for k in classes:
-        if k.startswith("C#"):
-            ctx = int(k[2:])
-
-    l1, c1 = start
-    # loc = lc_to_pos(lines, l1, 
-
-    try:
-        with open(filename) as f:
-            lines = f.read().split("\n")
-            return [[{"pre"},
-                     highlight_lines(lines[l1-ctx-1:l1+ctx], [], l1, 0)
-                     ]]
-    except IOError:
-        return ["Could not read file."]
-
 

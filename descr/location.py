@@ -4,7 +4,6 @@ from functools import reduce
 from .highlight import highlight_lines
 
 
-
 class Source(object):
 
     def __init__(self, text, url = None):
@@ -32,36 +31,6 @@ class Source(object):
         if col > len(text):
             raise IndexError(dict(line = line, col = col, source = self))
         return self.linepos[line] + col
-
-# class Source(object):
-
-#     def __init__(self, text, url = None):
-#         self.text = text
-#         self.url = url
-#         self.lines = [0]
-#         for i, c in enumerate(text):
-#             if c == "\n":
-#                 self.lines.append(i + 1)
-
-#     def linecol(self, pos):
-#         if 0 <= pos < len(self.text):
-#             line = bisect_right(self.lines, pos) - 1
-#             return (line + 1, pos - self.lines[line] + 1)
-#         else:
-#             raise exc.IndexError['sourcepos'](dict(pos = pos,
-#                                                    source = self))
-
-# s = """
-# hello
-
-
-
-# everyone
-# """
-# src = Source(s)
-# for i, c in enumerate(s):
-#     print(src.fromlinecol(*src.linecol(i)))
-# 1/0
 
 
 class Location(object):
@@ -200,10 +169,8 @@ def merge_locations(locations):
     next to each other. Do it if a good use case arise.
     """
     locations = list(sorted(loc for loc in locations))
-    # locations = [loc for loc in locations if loc]
     if not locations:
-        return Location("", (0, 0), [])
-        #raise Exception("You must merge at least one location!")
+        raise Exception("You must merge at least one location!")
     loc1, loc2 = locations[0], locations[-1]
     # locations should be in the same source
     assert all(loc1.source is l.source for l in locations[1:])
