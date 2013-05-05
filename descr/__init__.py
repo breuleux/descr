@@ -1,6 +1,7 @@
 
-from .format import Printer, descr
+from .format import descr, Formatter, Printer, RuleBuilder
 # from .terminal import std_terminal
 from .html import (HTMLFormatter, TerminusFormatter,
-                   boxy_terminus, boxy_notebook)
+                   boxy_terminus, boxy_notebook,
+                   HTMLRuleBuilder, make_joiner)
 from .extras import *

@@ -101,19 +101,20 @@ def format_traceback_from_exception(orig_exc, recurse):
 
 
 types_registry = {
-    tuple: iter_with_classes("@tuple"),
-    list: iter_with_classes("@list"),
-    set: iter_with_classes("@set"),
+    tuple: iter_with_classes("@tuple", "sequence"),
+    list: iter_with_classes("@list", "sequence"),
+    set: iter_with_classes("@set", "sequence"),
+    frozenset: iter_with_classes("@set", "@frozenset", "sequence"),
     dict: lambda d, recurse: ((frozenset({"@dict"}),)
                               + tuple(({"assoc"}, recurse(k), recurse(v))
                                       for k, v in d.items())),
-    bool: str_with_classes_and_itself("@bool"),
-    int: str_with_classes("@int"),
-    float: str_with_classes("@float"),
-    str: str_with_classes("@str"),
+    bool: str_with_classes_and_itself("@bool", "scalar"),
+    int: str_with_classes("@int", "scalar"),
+    float: str_with_classes("@float", "scalar"),
+    complex: str_with_classes("@complex", "scalar"),
+    str: str_with_classes("@str", "scalar"),
+    NoneType: classes("@None", "scalar"),
 
-    NoneType: classes("@None"),
     Exception: format_traceback_from_exception,
-
     TracebackType: format_traceback,
 }

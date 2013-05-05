@@ -18,15 +18,11 @@ except ImportError:
 
 class NotebookPrinter(Printer):
 
-    def __init__(self, descr, formatter, setup_now = True, top = "pydescr"):
-        super(NotebookPrinter, self).__init__(None, descr, formatter, setup_now, top)
+    def __init__(self, descr, formatter):
+        super(NotebookPrinter, self).__init__(None, descr, formatter)
 
-    def setup(self):
-        s = self.formatter.setup()
-        display_html(HTML(s))
-
-    def write(self, stream):
-        s = self.formatter.translate(stream)
+    def write(self, stream, rules = None):
+        s = self.translate(stream, rules)
         display_html(HTML(s))
 
 
@@ -34,12 +30,14 @@ class NotebookPrinter(Printer):
 def boxy_notebook(descr = descr,
                   rules = None,
                   layout = None,
-                  top = "pydescr"):
+                  top = None,
+                  always_setup = False):
 
     if layout is None:
         layout = html_boxy["light"]
     if rules is not None:
         layout += rules
-    pr = NotebookPrinter(descr, HTMLFormatter(layout.rules, top = top), top = top)
+    pr = NotebookPrinter(descr, HTMLFormatter(layout, top = top,
+                                              always_setup = always_setup))
     return pr
 

@@ -176,10 +176,13 @@ class RuleTreeExplorer(object):
     def explore(self, classes, children):
         new = RuleTreeExplorer(classes, accumulate_candidates(classes, self.candidates))
 
-        for prop, combine in [(":classes", lambda x, y: y),
-                              (":+classes", lambda x, y: x | y),
-                              (":-classes", lambda x, y: x - y)]:
-            for new_classes in new.properties.get(prop, ()):
+        for prop, combine, reiterate in [(":classes", lambda x, y: y, False),
+                                         (":+classes", lambda x, y: x | y, True),
+                                         (":-classes", lambda x, y: x - y, True)]:
+            functions = new.properties.get(prop, ())
+            if reiterate is False:
+                functions = functions[-1:]
+            for new_classes in functions:
                 if callable(new_classes):
                     new_classes = new_classes(classes, children)
                 if isinstance(new_classes, str):

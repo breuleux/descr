@@ -42,10 +42,12 @@ html_boxy.layout = dict(
                       }),
 
         # scalar = @str, @int, @True, @False, ...
-        (".{scalar}", {":+classes": "pre",
-                       "text-align": "center",
+        (".{scalar}", {"white-space": "pre",
                        "padding": "3px",
-                       "margin": "3px"}),
+                       "margin": "3px",
+                       "max-height": "300px",
+                       "overflow": "auto"
+                       }),
         # we add a double quote "" before an empty string
         (".{empty}.{@str}::before", {"content": '"\\"\\""'}),
 
@@ -57,8 +59,7 @@ html_boxy.layout = dict(
         # might need to disable the second rule, for example:
         # (".empty.sequence", {"!clear": True})
         (".{empty}.{sequence}::before", {"content": '"\\2205"'}),
-        (".{empty}.{sequence}", {"border": "0px"}),
-
+        # (".{empty}.{sequence}", {"border": "0px"}),
 
         (".stack", {
                 "margin": "3px",
@@ -135,6 +136,13 @@ html_boxy.layout = dict(
                      "margin-right": "10px",
                      "display": "inline-block",
                      "text-align": "right"}),
+
+        # Quoting
+
+        (".quote.class_set > *", {"margin-left": "3px", "margin-right": "3px"}),
+        (".quote.class_set", {"padding": "3px", "margin": "3px"}),
+        (".quote.description", {"padding": "3px", "margin": "3px"}),
+
         ),
 
     close = HTMLRuleBuilder(
@@ -170,14 +178,22 @@ html_boxy.styles["dark"] = dict(
         (".{@False}", {"color": "#f55"}),
         (".{@None}", {"color": "#a88"}),
         (".{@int}", {"color": "#88f"}),
+        (".{@float}", {"color": "#88f"}),
+        (".{@complex}", {"color": "#88f"}),
         (".{@str}", {"color": "#f88"}),
         (".{empty}", {"color": "#888"}),
 
-        (".{sequence}", {"border": "2px solid #222",
-                         "border-bottom": "2px solid #888"}),
+        (".{sequence}", {"border": "2px solid #222"}),
+        (".{empty}.{sequence}", {"border": "2px solid #000"}),
+        (".{@tuple}:hover", {"border": "2px solid #888"}),
+        (".{@list}:hover", {"border": "2px solid #a44"}),
+        (".{@dict}:hover", {"border": "2px solid #484"}),
+        (".{@set}:hover", {"border": "2px solid #44a"}),
+
         (".{fieldlist}", {"border-bottom": "2px solid #88f"}),
 
-        (".{assoc_separator}", { "border": "2px solid #fff"}),
+        (".assoc:hover .assoc_separator", {"border": "2px solid #fff"}),
+        (".{assoc_separator}", { "border": "2px solid #888"}),
 
         (".{objectlabel}", {"color": "#88f", "font-weight": "bold", ":+classes": "scalar"}),
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #88f"}),
@@ -194,6 +210,19 @@ html_boxy.styles["dark"] = dict(
         (".{@Exception} .{objectlabel} + .{assoc_separator}", {"border": "2px solid #f88"}),
         (".{@Exception} .{fieldlist}", {"border-bottom": "4px solid #f88"}),
         (".exception_message", {"display": "block"}),
+
+        # Quoting
+
+        (".quote.class_set > *", {"background-color": "#222", "color": "blue"}),
+        (".quote.class_set", {"border": "2px solid blue"}),
+        (".quote.description", {"border": "2px solid #888"}),
+        (".quote.description:hover", {"border": "2px solid #fff"}),
+
+        # HTMLNode
+
+        (".{@HTMLNode} > .{+classes}", {"background-color": "#222"}),
+        (".{@HTMLNode} > .{+classes} > *", {"color": "#88f", "padding": "3px"}),
+
         ),
     close = HTMLRuleBuilder(
         (".{hl}", {"font-weight": "bold"}),
@@ -218,14 +247,22 @@ html_boxy.styles["light"] = dict(
         (".{@False}", {"color": "#f00"}),
         (".{@None}", {"color": "#555"}),
         (".{@int}", {"color": "#00a"}),
+        (".{@float}", {"color": "#00a"}),
+        (".{@complex}", {"color": "#00a"}),
         (".{@str}", {"color": "#a00"}),
         (".{empty}", {"color": "#888"}),
 
-        (".{sequence}", {"border": "2px solid #eee",
-                         "border-bottom": "2px solid #888"}),
+        (".{sequence}", {"border": "2px solid #eee"}),
+        (".{empty}.{sequence}", {"border": "2px solid #fff"}),
+        (".{@tuple}:hover", {"border": "2px solid #bbb"}),
+        (".{@list}:hover", {"border": "2px solid #f88"}),
+        (".{@dict}:hover", {"border": "2px solid #6a6"}),
+        (".{@set}:hover", {"border": "2px solid #88f"}),
+
         (".{fieldlist}", {"border-bottom": "2px solid #00f"}),
 
-        (".{assoc_separator}", {"border": "2px solid #000"}),
+        (".assoc:hover > .assoc_separator", {"border": "2px solid #000"}),
+        (".{assoc_separator}", {"border": "2px solid #888"}),
 
         (".{objectlabel}", {"color": "#00f", "font-weight": "bold", ":+classes": "scalar"}),
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #00f"}),
@@ -242,6 +279,19 @@ html_boxy.styles["light"] = dict(
         (".{@Exception} .{objectlabel} + .{assoc_separator}", {"border": "2px solid #800"}),
         (".{@Exception} .{fieldlist}", {"border-bottom": "4px solid #800"}),
         (".exception_message", {"display": "block"}),
+
+        # Quoting
+
+        (".quote.class_set > *", {"background-color": "#eee", "color": "blue"}),
+        (".quote.class_set", {"border": "2px solid blue"}),
+        (".quote.description", {"border": "2px solid #aaa"}),
+        (".quote.description:hover", {"border": "2px solid #000"}),
+
+        # HTMLNode
+
+        (".{@HTMLNode} > .{+classes}", {"background-color": "#eee"}),
+        (".{@HTMLNode} > .{+classes} > *", {"color": "#00f", "padding": "3px"}),
+
         ),
     close = HTMLRuleBuilder(
         (".{hl}", {"font-weight": "bold"}),

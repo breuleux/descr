@@ -48,15 +48,12 @@ def _pull_field(classes, parts):
     # children of a node with class "fieldlist" (ctrl+f "_pull_field"
     # to see how it's done)
 
-    blocker = "block:field"
-    if blocker in classes:
-        return classes, parts
-
-    field = [klass for klass in classes if klass.startswith("+")][0][1:]
-    classes2 = (classes - {"field"}) | {blocker}
+    pfield = [klass for klass in classes if klass.startswith("+")][0]
+    field = pfield[1:]
+    classes2 = classes - {"field", pfield}
     return ({"assoc"} | classes2,
             [({"fieldlabel"}, field),
-             ({"field", "+"+field},) + tuple(parts)])
+             ({"field", pfield},) + tuple(parts)])
 
 
 def _replace_object(classes, parts, fieldlist = True):
@@ -76,7 +73,7 @@ def _replace_object(classes, parts, fieldlist = True):
     # Automatically applied to the class "object". (ctrl+f
     # "_replace_object" to see how it's done)
 
-    blocker = "block:object"
+    blocker = "object:done"
     if blocker in classes:
         return classes, parts
 
@@ -86,7 +83,7 @@ def _replace_object(classes, parts, fieldlist = True):
     else:
         name = [klass for klass in classes if klass.startswith("@")][0]
 
-    classes2 = (classes - {"object"}) | {blocker}
+    classes2 = classes | {blocker}
 
     if not parts:
         return {"objectlabel"} | classes2, [name]
@@ -194,15 +191,15 @@ def _insert_lineno(c, d):
 
 basic = RuleBuilder(
 
-    # booleans, integers, strings, etc. will be supplemented wtih the
-    # class "scalar", which is a sort of shortcut to apply the same
-    # style to all of them and allowing extensions to do the same.
-    (".{@True}, .{@False}, .{@None}, .{@int}, .{@str}",
-     {":+classes": "scalar"}),
+    # # booleans, integers, strings, etc. will be supplemented wtih the
+    # # class "scalar", which is a sort of shortcut to apply the same
+    # # style to all of them and allowing extensions to do the same.
+    # (".{@True}, .{@False}, .{@None}, .{@int}, .{@float}, .{@complex}, .{@str}",
+    #  {":+classes": "scalar"}),
     
-    # Ditto for "sequence":
-    (".{@list}, .{@tuple}, .{@dict}, .{@set}",
-     {":+classes": "sequence"}),
+    # # Ditto for "sequence":
+    # (".{@list}, .{@tuple}, .{@dict}, .{@set}",
+    #  {":+classes": "sequence"}),
 
     # Check for empty strings and containers
     (".{@str}, .{hl}, .{hl1}, .{hl2}, .{hl3}, .{hlE}", {":+classes": _check_empty_str}),

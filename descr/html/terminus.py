@@ -1,11 +1,15 @@
 
 import sys
-from ..format import descr, Printer, AlwaysSetupPrinter
+from ..format import descr, Printer #, AlwaysSetupPrinter
 from .core import HTMLFormatter, generate_html
 from .boxy import html_boxy
 
 
 class TerminusFormatter(HTMLFormatter):
+
+    # def __init__(self, rules, top = None, always_setup = False):
+    #     self.always_setup = always_setup
+    #     super(TerminusFormatter, self).__init__(rules, top)
 
     def wrapesc(self, x):
         if '\n' in x:
@@ -25,9 +29,17 @@ class TerminusFormatter(HTMLFormatter):
 
         return "".join(lines)
 
-    def translate(self, stream):
-        html = super(TerminusFormatter, self).translate(stream)
-        return self.wrapesc(':h {x}'.format(x = html))
+    # def incremental_setup(self):
+    #     if self.css_rules_changed or self.always_setup:
+    #         self.css_rules_changed = False
+    #         return self.setup()
+    #     else:
+    #         return ""
+
+    def translate_no_setup(self, stream):
+        s = super(TerminusFormatter, self).translate_no_setup(stream)
+        s = self.wrapesc(':h {x}'.format(x = s))
+        return s
 
 
 def boxy_terminus(out = sys.stdout,
@@ -35,13 +47,17 @@ def boxy_terminus(out = sys.stdout,
                   rules = None,
                   layout = None,
                   always_setup = False,
-                  top = "pydescr"):
+                  top = None):
 
     if layout is None:
         layout = html_boxy["dark"]
     if rules is not None:
          layout += rules
-    Pr = AlwaysSetupPrinter if always_setup else Printer
-    pr = Pr(out, descr, TerminusFormatter(layout.rules, top = top), top = top)
+
+    pr = Printer(out,
+                 descr,
+                 TerminusFormatter(layout,
+                                   top = top,
+                                   always_setup = always_setup))
     return pr
 

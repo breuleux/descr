@@ -4,11 +4,6 @@ import itertools
 from .registry import types_registry
 
 
-# A: class modification
-# B: rearrange prior state
-# C: recursively apply the rules
-# D: post-processing
-
 def exhaust_stream(stream):
     classes = set()
     parts = []
@@ -61,16 +56,22 @@ class DescriptionProcessor(object):
 
         props = self.properties
 
+        for f in props.get(":hide", ()):
+            if f(self.classes, self.children):
+                self.classes = {}
+                self.children = []
+                return
+
         for f in props.get(":rearrange", ()):
             self.children = f(self.classes, self.children)
 
         before_acc = []
         for f in props.get(":before", ()):
-            before_acc = list(f(self.classes, self.children)) + before_acc
+            before_acc = [f(self.classes, self.children)] + before_acc
 
         after_acc = []
         for f in props.get(":after", ()):
-            after_acc += list(f(self.classes, self.children))
+            after_acc += [f(self.classes, self.children)]
 
         if before_acc or after_acc:
             self.children = list(itertools.chain(before_acc, self.children, after_acc))
@@ -90,8 +91,6 @@ class DescriptionProcessor(object):
 
         for f in props.get(":post", ()):
             self.children = f(self.classes, self.children)
-
-
 
 
 # class Description(object):
@@ -170,35 +169,39 @@ class RawFormatter(Formatter):
 
 class Printer(object):
 
-    def __init__(self, port, descr, formatter, setup_now = True, top = "pydescr"):
+    def __init__(self, port, descr, formatter):
         self.port = port
         self.descr = descr
         self.formatter = formatter
-        self.top = top
-        if setup_now:
-            self.setup()
 
-    def setup(self):
-        self.port.write(self.formatter.setup())
+    def translate(self, stream, rules = None):
+        if rules is not None:
+            formatter = self.formatter.copy()
+            formatter.add_rules(rules)
+        else:
+            formatter = self.formatter
+        return formatter.translate(stream)
 
-    def write(self, stream):
-        s = self.formatter.translate(stream)
+    def write(self, stream, rules = None):
+        s = self.translate(stream, rules)
         self.port.write(s)
 
-    def pr(self, obj):
-        d = self.descr(obj)
-        if self.top:
-            d = ({self.top}, d)
-        self.write(d)
+    def pr(self, *objects, **kwargs):
+        if "descr" in kwargs:
+            descr = kwargs.pop("descr")
+        else:
+            descr = self.descr
+        d = [descr(obj) for obj in objects]
+        self.write(d, **kwargs)
 
     __call__ = pr
 
 
-class AlwaysSetupPrinter(Printer):
+# class AlwaysSetupPrinter(Printer):
 
-    def write(self, stream):
-        self.setup()
-        super(AlwaysSetupPrinter, self).write(stream)
+#     def write(self, stream):
+#         self.setup()
+#         super(AlwaysSetupPrinter, self).write(stream)
 
 
 class dict2(dict):
@@ -268,6 +271,17 @@ class RuleBuilder(RulesRegistry):
     def prop(self, selector, prop, value):
         return self.rule(selector, {prop: value})
 
+    def fprop(self, selector, prop, value, f = None, elsevalue = None):
+        if f is not None:
+            v = lambda c, d: value if f(c, d) else elsevalue
+        elif callable(value):
+            v = value
+        elif value is None:
+            v = None
+        else:
+            v = lambda c, d: value
+        return self.rule(selector, {prop: v})
+
     def rule(self, selector, props1 = {}, **props2):
         self.add_rule(selector, props1, **props2)
         return self
@@ -276,27 +290,43 @@ class RuleBuilder(RulesRegistry):
         self.add_rules(*rules)
         return self
 
-    def pclasses(self, selector, f):
-        return self.rule(selector, {":+classes": f})
+    def classes(self, selector, cls, f = None):
+        return self.fprop(selector, ":classes", cls, f)
 
-    def mclasses(self, selector, f):
-        return self.rule(selector, {":-classes": f})
+    def pclasses(self, selector, cls, f = None):
+        return self.fprop(selector, ":+classes", cls, f)
+
+    def mclasses(self, selector, cls, f = None):
+        return self.fprop(selector, ":-classes", cls, f)
 
     def pmclasses(self, selector, p, m):
         return self.rule(selector, {":+classes": p,
                                     ":-classes": m})
 
-    def before(self, selector, f):
-        return self.rule(selector, {":before": f})
+    def replace(self, selector, value, f = None):
+        return self.fprop(selector, ":replace", value, f, [])
 
-    def after(self, selector, f):
-        return self.rule(selector, {":after": f})
+    def rearrange(self, selector, value, f = None):
+        return self.fprop(selector, ":rearrange", value, f, [])
 
-    def join(self, selector, f):
-        return self.rule(selector, {":join": f})
+    def before(self, selector, value, f = None):
+        return self.fprop(selector, ":before", value, f, [])
 
-    def rearrange(self, selector, f):
-        return self.rule(selector, {":rearrange": f})
+    def after(self, selector, value, f = None):
+        return self.fprop(selector, ":after", value, f, [])
+
+    def hide(self, selector, f = None):
+        if f is None:
+            f = lambda c, p: True
+        return self.fprop(selector, ":hide", f)
+
+    def inspect(self, selector, f = None):
+        if f is None:
+            f = lambda node: True
+        return self.fprop(selector, ":inspect", f)
+
+    def post(self, selector, value, f = None):
+        return self.fprop(selector, ":post", value, f, [])
 
     def strip_fields(self, name, *fields):
         for field in fields:
@@ -305,6 +335,15 @@ class RuleBuilder(RulesRegistry):
             else:
                 self.mclasses(".{%s} .{+%s}" % (name, field.strip()), "field")
         return self
+
+    def __getattr__(self, attr):
+        if attr.startswith("prop_"):
+            attribute = attr[5:]
+            def f(selector, value):
+                return self.rule(selector, {attribute: value})
+            return f
+        else:
+            return getattr(super(RuleBuilder, self), attr)
 
 
 class Layout(object):
