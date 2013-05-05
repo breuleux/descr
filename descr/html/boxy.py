@@ -199,6 +199,8 @@ html_boxy.styles["dark"] = dict(
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #88f"}),
         (".{fieldlabel}", {"color": "#f88", ":+classes": "scalar"}),
 
+        # Traceback
+
         (".{@traceback}", {"border": "1px dashed #888"}),
         (".traceback_separator", {"border": "2px solid #888"}),
         (".source_header", {"background-color": "#222"}),
@@ -267,6 +269,8 @@ html_boxy.styles["light"] = dict(
         (".{objectlabel}", {"color": "#00f", "font-weight": "bold", ":+classes": "scalar"}),
         (".{objectlabel} + .{assoc_separator}", { "border": "2px solid #00f"}),
         (".{fieldlabel}", {"color": "#a00", ":+classes": "scalar"}),
+
+        # Traceback
 
         (".{@traceback}", {"border": "1px dashed #888"}),
         (".traceback_separator", {"border": "2px solid #888"}),

@@ -57,6 +57,7 @@ class HTMLNode(object):
             "".join(map(str, self.children)),
             self.tag)
 
+    # white-space: pre fucks this up
     # def __str__(self, indent = 0):
     #     return '%s<%s class="%s">\n%s\n%s</%s>' % (
     #         " " * indent,
@@ -113,8 +114,6 @@ def generate_html(description, noinspect = False):
         children = [generate_html(child, inspect_this or noinspect)
                     for child in description.children]
         classes = description.classes
-        # node = HTMLNode(classes, nodes)
-        # children = node.children
 
         for f in props.get(":htmlreplace", ()):
             classes, children = f(classes, children)
@@ -132,38 +131,6 @@ def generate_html(description, noinspect = False):
                 True)
 
     return node
-
-
-
-
-# def generate_html(description, rules):
-#     if description is None or isinstance(description, (int, float, bool)):
-#         description = str(description)
-
-#     if isinstance(description, str):
-#         # s = "<span>" + quotehtml(description) + "</span>"
-#         s = HTMLNode({}, [quotehtml(description)])
-#     else:
-#         classes, parts = exhaust_stream(description)
-#         rules = rules.explore(classes, parts)
-#         parts = rules.premanipulate(parts)
-
-#         raw = rules.properties.get(":raw", False)
-#         if raw and raw[-1]:
-#             children = map(str, parts)
-#         else:
-#             children = [generate_html(part, rules) for part in parts]
-
-#         # children = rules.postmanipulate(rules.classes, children)
-#         s = HTMLNode(rules.classes, children)
-#         s = rules.postmanipulate(s)
-
-#         # s = rules.postmanipulate(strings)
-#         # s = "<span class='%s'>%s</span>" % (
-#         #     " ".join(rules.classes),
-#         #     s)
-
-#     return s
 
 
 
@@ -287,7 +254,5 @@ def make_joiner(s):
         for child in children[1:]:
             new_children.append(s)
             new_children.append(child)
-        # node.children = children
-        # return HTMLNode(node.classes, children, node.tag)
         return new_children
     return join

@@ -11,6 +11,7 @@ class Descriptor(object):
         else:
             self.classes = self.__classes__
 
+
 class Raw(Descriptor):
 
     def __init__(self, x):

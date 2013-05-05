@@ -191,16 +191,6 @@ def _insert_lineno(c, d):
 
 basic = RuleBuilder(
 
-    # # booleans, integers, strings, etc. will be supplemented wtih the
-    # # class "scalar", which is a sort of shortcut to apply the same
-    # # style to all of them and allowing extensions to do the same.
-    # (".{@True}, .{@False}, .{@None}, .{@int}, .{@float}, .{@complex}, .{@str}",
-    #  {":+classes": "scalar"}),
-    
-    # # Ditto for "sequence":
-    # (".{@list}, .{@tuple}, .{@dict}, .{@set}",
-    #  {":+classes": "sequence"}),
-
     # Check for empty strings and containers
     (".{@str}, .{hl}, .{hl1}, .{hl2}, .{hl3}, .{hlE}", {":+classes": _check_empty_str}),
     (".{sequence}", {":+classes": _check_empty_sequence}),

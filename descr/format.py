@@ -93,65 +93,6 @@ class DescriptionProcessor(object):
             self.children = f(self.classes, self.children)
 
 
-# class Description(object):
-
-#     def __init__(self, description, rules):
-#         self.classes = {}
-#         self.gen = iter(description)
-#         self.children = []
-#         self.finished = False
-
-#     def _next(self):
-#         child = next(self.gen)
-#         if isinstance(child, (str, int, float, bool)) or child is None:
-#             self.children.append(child)
-#         elif isinstance(child, (set, frozenset)):
-#             self.classes.add(child)
-#         elif isinstance(child, dict):
-#             self.classes |= entry.get(True, {})
-#             self.classes -= entry.get(False, {})
-#         else:
-#             self.children.append(Description(child, rules))
-
-#     def next(self):
-#         try:
-#             self._next()
-#         except StopIteration:
-#             self.finished = True
-#             raise
-
-#     def exhaust(self):
-#         if self.finished:
-#             return
-#         try:
-#             while True:
-#                 self.next()
-#         except StopIteration:
-#             self.finished = True
-#             return
-
-#     def get_up_to(self, n):
-#         if self.finished or n < len(self.children):
-#             return
-#         try:
-#             while n > len(self.children):
-#                 self.next()
-#         except StopIteration:
-#             self.finished = True
-#             return
-
-#     def __getitem__(self, item):
-#         if isinstance(item, slice):
-#             self.get_up_to(item.stop)
-#         else:
-#             self.get_up_to(item)
-#         return self.children[item]
-
-#     def process(self):
-        
-
-
-
 
 class Formatter(object):
     pass
@@ -196,12 +137,6 @@ class Printer(object):
 
     __call__ = pr
 
-
-# class AlwaysSetupPrinter(Printer):
-
-#     def write(self, stream):
-#         self.setup()
-#         super(AlwaysSetupPrinter, self).write(stream)
 
 
 class dict2(dict):

@@ -7,10 +7,6 @@ from .boxy import html_boxy
 
 class TerminusFormatter(HTMLFormatter):
 
-    # def __init__(self, rules, top = None, always_setup = False):
-    #     self.always_setup = always_setup
-    #     super(TerminusFormatter, self).__init__(rules, top)
-
     def wrapesc(self, x):
         if '\n' in x:
             return "\x1B[?0;7y{x}\a".format(x = x)
@@ -28,13 +24,6 @@ class TerminusFormatter(HTMLFormatter):
             lines.append(s)
 
         return "".join(lines)
-
-    # def incremental_setup(self):
-    #     if self.css_rules_changed or self.always_setup:
-    #         self.css_rules_changed = False
-    #         return self.setup()
-    #     else:
-    #         return ""
 
     def translate_no_setup(self, stream):
         s = super(TerminusFormatter, self).translate_no_setup(stream)
