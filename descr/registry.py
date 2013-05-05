@@ -105,7 +105,7 @@ types_registry = {
     list: iter_with_classes("@list", "sequence"),
     set: iter_with_classes("@set", "sequence"),
     frozenset: iter_with_classes("@set", "@frozenset", "sequence"),
-    dict: lambda d, recurse: ((frozenset({"@dict"}),)
+    dict: lambda d, recurse: ((frozenset({"@dict", "sequence"}),)
                               + tuple(({"assoc"}, recurse(k), recurse(v))
                                       for k, v in d.items())),
     bool: str_with_classes_and_itself("@bool", "scalar"),
