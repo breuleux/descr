@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = 'descr',
     version = '0.1',
-    packages = ['descr'],
+    packages = ['descr', 'descr.html'],
     
     # Metadata
     author = 'Olivier Breuleux',
