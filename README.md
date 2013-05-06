@@ -2,6 +2,9 @@
 `descr`: a pretty-printing package
 ==================================
 
+Features
+========
+
 * Pretty-prints Python structures as HTML+CSS in the IPython Notebook
   or [Terminus](https://github.com/breuleux/terminus).
   * I'll add one for the terminal soon enough, it's just less amusing
@@ -9,6 +12,12 @@
 * Basic datatypes, tuple, lists, dictionaries, sets, tracebacks.
 * Highlighting of parts using selectors.
 * Customizable and extensible.
+
+
+Installing
+==========
+
+`pip install descr`
 
 
 IPython tutorials
