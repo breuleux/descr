@@ -46,6 +46,48 @@ class Group(Descriptor):
         return [self.classes] + list(map(recurse, self.elements))
 
 
+class Table(Descriptor):
+
+    __classes__ = frozenset({"table"})
+
+    def __init__(self,
+                 elements,
+                 classes = None,
+                 row_classes = None,
+                 column_classes = None):
+        super(Table, self).__init__(classes)
+        if isinstance(elements, dict):
+            elements = list(elements.items())
+
+        if not row_classes:
+            row_classes = [set()]
+        elif isinstance(row_classes, set):
+            row_classes = [row_classes]
+        if len(row_classes) < len(elements):
+            row_classes = row_classes + [row_classes[-1]] * (len(elements) - len(row_classes))
+
+        if not column_classes:
+            column_classes = [set()]
+        elif isinstance(column_classes, set):
+            column_classes = [column_classes]
+
+        self.elements = []
+        for row, rc in zip(elements, row_classes):
+            if len(column_classes) < len(row):
+                cclasses = column_classes + [column_classes[-1]] * (len(row) - len(column_classes))
+            else:
+                cclasses = column_classes
+            newrow = []
+            for column, cc in zip(row, cclasses):
+                newrow.append(Group([column], classes = cc))
+
+            self.elements.append(Group(newrow, classes = rc))
+
+    def __descr__(self, recurse):
+        return [self.classes] + list(map(recurse, self.elements))
+
+
+
 class Object(Descriptor):
 
     __classes__ = frozenset({"object"})

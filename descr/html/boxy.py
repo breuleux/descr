@@ -143,6 +143,13 @@ html_boxy.layout = dict(
         (".quote.class_set", {"padding": "3px", "margin": "3px"}),
         (".quote.description", {"padding": "3px", "margin": "3px"}),
 
+        # Tables
+        (".table", {"display": "table",
+                    "border-collapse": "collapse"}),
+        (".table > *", {"display": "table-row"}),
+        (".table > * > *", {"display": "table-cell",
+                            "padding": "0px 10px 0px 10px"}),
+
         ),
 
     close = HTMLRuleBuilder(
@@ -215,8 +222,8 @@ html_boxy.styles["dark"] = dict(
 
         # Quoting
 
-        (".quote.class_set > *", {"background-color": "#222", "color": "blue"}),
-        (".quote.class_set", {"border": "2px solid blue"}),
+        (".quote.class_set > *", {"background-color": "#222", "color": "#88f"}),
+        (".quote.class_set", {"border": "2px solid #88f"}),
         (".quote.description", {"border": "2px solid #888"}),
         (".quote.description:hover", {"border": "2px solid #fff"}),
 

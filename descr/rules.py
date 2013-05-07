@@ -1,7 +1,19 @@
 
+import re
 import itertools
 from collections import defaultdict
 import cssselect as cs
+
+
+
+def escape_selector(selector):
+    def escape(m):
+        s = m.groups()[0]
+        s = "".join(("\\"+c if not c.isalnum() else c)
+                    for c in s)
+        return s
+
+    return re.sub("\\{([^}]*)\\}", escape, selector)
 
 
 def custom_merge(orig, new, merge = None):

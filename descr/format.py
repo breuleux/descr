@@ -100,9 +100,6 @@ class Formatter(object):
 
 class RawFormatter(Formatter):
 
-    def setup(self):
-        return ""
-
     def translate(self, stream):
         return str(stream)
 
