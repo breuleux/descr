@@ -46,6 +46,23 @@ class Group(Descriptor):
         return [self.classes] + list(map(recurse, self.elements))
 
 
+class WithClasses(Descriptor):
+
+    __classes__ = frozenset({})
+
+    def __init__(self, x, classes = None):
+        super(WithClasses, self).__init__(classes)
+        self.x = x
+
+    def __descr__(self, recurse):
+        v = recurse(self.x)
+        if isinstance(v, (str, int, float)):
+            v = [v]
+        else:
+            v = list(v)
+        return [self.classes] + v
+
+
 class Table(Descriptor):
 
     __classes__ = frozenset({"table"})
@@ -79,9 +96,9 @@ class Table(Descriptor):
                 cclasses = column_classes
             newrow = []
             for j, (column, cc) in enumerate(zip(row, cclasses)):
-                newrow.append(Group([column],
-                                    classes = {"C#"+str(j),
-                                               "C#"+("odd" if j%2 else "even")}|cc))
+                newrow.append(WithClasses(column,
+                                          classes = {"C#"+str(j),
+                                                     "C#"+("odd" if j%2 else "even")}|cc))
 
             self.elements.append(Group(newrow,
                                        classes = {"R#"+str(i),
@@ -126,8 +143,8 @@ class Object(Descriptor):
         for element in self.elements:
             results.append(recurse(element))
         for field in self.field_ordering:
-            results.append(({"field", "+" + field},
-                            recurse(self.fields[field])))
+            results.append([{"field", "+" + field}]
+                           + list(recurse(self.fields[field])))
         return results
 
 

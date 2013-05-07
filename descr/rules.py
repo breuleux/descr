@@ -189,8 +189,8 @@ class RuleTreeExplorer(object):
         new = RuleTreeExplorer(classes, accumulate_candidates(classes, self.candidates))
 
         for prop, combine, reiterate in [(":classes", lambda x, y: y, False),
-                                         (":+classes", lambda x, y: x | y, True),
-                                         (":-classes", lambda x, y: x - y, True)]:
+                                         (":-classes", lambda x, y: x - y, True),
+                                         (":+classes", lambda x, y: x | y, True)]:
             functions = new.properties.get(prop, ())
             if reiterate is False:
                 functions = functions[-1:]

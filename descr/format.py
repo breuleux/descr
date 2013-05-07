@@ -232,8 +232,11 @@ class RuleBuilder(RulesRegistry):
         return self.fprop(selector, ":-classes", cls, f)
 
     def pmclasses(self, selector, p, m):
-        return self.rule(selector, {":+classes": p,
-                                    ":-classes": m})
+        if not isinstance(p, set): p = {p}
+        if not isinstance(m, set): m = {m}
+        return self.rule(selector,
+                         {":classes":
+                              lambda classes, children: (classes | p) - m})
 
     def replace(self, selector, value, f = None):
         return self.fprop(selector, ":replace", value, f, [])

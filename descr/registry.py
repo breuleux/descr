@@ -62,7 +62,7 @@ def _list_frames(tb):
                      ({"+fname", "field"},
                       fname),
                      ({"+location", "field", "location"},
-                      filename,
+                      ({"file"}, filename),
                       ({"hl1"}, (lineno, 1), "stripline"))]
         elements.append(framedata)
     return elements

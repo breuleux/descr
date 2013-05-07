@@ -51,9 +51,9 @@ def _pull_field(classes, parts):
     pfield = [klass for klass in classes if klass.startswith("+")][0]
     field = pfield[1:]
     classes2 = classes - {"field", pfield}
-    return ({"assoc"} | classes2,
+    return ({"assoc"},
             [({"fieldlabel"}, field),
-             ({"field", pfield},) + tuple(parts)])
+             ({"field", pfield} | classes2,) + tuple(parts)])
 
 
 def _replace_object(classes, parts, fieldlist = True):
@@ -127,23 +127,32 @@ def _extract_locations(classes, parts):
     if blocker in classes:
         return classes, parts
 
-    filename, specs = parts[0], parts[1:]
-
     ctx = 0
     for k in classes:
         if k.startswith("C#"):
             ctx = int(k[2:])
 
-    try:
-        f = open(filename)
-        text = f.read()
-        f.close()
-    except IOError:
-        return (classes,
-                [[{'source_header'},
-                  ({'field', '+path', 'path'}, filename),
-                  ({'source_loc'}, {'hl1'}, "???")],
-                 [{'source_code'}, "Could not read file."]])
+    source, specs = parts[0], parts[1:]
+    cls, args = exhaust_stream(source)
+
+    if "file" in cls:
+        if len(args) > 1:
+            filename, text = args
+        else:
+            filename = args[0]
+            try:
+                f = open(filename)
+                text = f.read()
+                f.close()
+            except IOError:
+                return (classes,
+                        [[{'source_header'},
+                          ({'field', '+path', 'path'}, filename),
+                          ({'source_loc'}, {'hl1'}, "???")],
+                         [{'source_code'}, "Could not read file."]])
+    else:
+        text = arg
+        filename = "<string>"
 
     source = location.Source(text, filename)
 
