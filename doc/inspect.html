@@ -1,0 +1,5572 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>[inspect]</title>
+<style type="text/css">
+/**
+ * HTML5 ✰ Boilerplate
+ *
+ * style.css contains a reset, font normalization and some base styles.
+ *
+ * Credit is left where credit is due.
+ * Much inspiration was taken from these projects:
+ * - yui.yahooapis.com/2.8.1/build/base/base.css
+ * - camendesign.com/design/
+ * - praegnanz.de/weblog/htmlcssjs-kickstart
+ */
+
+
+/**
+ * html5doctor.com Reset Stylesheet (Eric Meyer's Reset Reloaded + HTML5 baseline)
+ * v1.6.1 2010-09-17 | Authors: Eric Meyer & Richard Clark
+ * html5doctor.com/html-5-reset-stylesheet/
+ */
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+sup { vertical-align: super; }
+sub { vertical-align: sub; }
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+blockquote, q { quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after { content: ""; content: none; }
+
+ins { background-color: #ff9; color: #000; text-decoration: none; }
+
+mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bold; }
+
+del { text-decoration: line-through; }
+
+abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+
+input, select { vertical-align: middle; }
+
+
+/**
+ * Font normalization inspired by YUI Library's fonts.css: developer.yahoo.com/yui/
+ */
+
+body { font:13px/1.231 sans-serif; *font-size:small; } /* Hack retained to preserve specificity */
+select, input, textarea, button { font:99% sans-serif; }
+
+/* Normalize monospace sizing:
+   en.wikipedia.org/wiki/MediaWiki_talk:Common.css/Archive_11#Teletype_style_fix_for_Chrome */
+pre, code, kbd, samp { font-family: monospace, sans-serif; }
+
+em,i { font-style: italic; }
+b,strong { font-weight: bold; }
+
+</style>
+<style type="text/css">
+
+/* Flexible box model classes */
+/* Taken from Alex Russell http://infrequently.org/2009/08/css-3-progress/ */
+ 
+.hbox {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: horizontal;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: horizontal;
+	box-align: stretch;
+}
+ 
+.hbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+ 
+.vbox {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: vertical;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: vertical;
+	box-align: stretch;
+	/* width must be 100% to force FF to behave like webkit */
+	width: 100%;
+}
+ 
+.vbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+  
+.reverse {
+	-webkit-box-direction: reverse;
+	-moz-box-direction: reverse;
+	box-direction: reverse;
+}
+ 
+.box-flex0 {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+ 
+.box-flex1, .box-flex {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+ 
+.box-flex2 {
+	-webkit-box-flex: 2;
+	-moz-box-flex: 2;
+	box-flex: 2;
+}
+ 
+.box-group1 {
+	-webkit-box-flex-group: 1;
+	-moz-box-flex-group: 1;
+	box-flex-group: 1;
+}
+ 
+.box-group2 {
+	-webkit-box-flex-group: 2;
+	-moz-box-flex-group: 2;
+	box-flex-group: 2;
+}
+ 
+.start {
+	-webkit-box-pack: start;
+	-moz-box-pack: start;
+	box-pack: start;
+}
+ 
+.end {
+	-webkit-box-pack: end;
+	-moz-box-pack: end;
+	box-pack: end;
+}
+ 
+.center {
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	box-pack: center;
+}
+
+</style>
+<style type="text/css">
+/**
+ * Primary styles
+ *
+ * Author: IPython Development Team
+ */
+
+
+body {
+    overflow: hidden;
+}
+
+span#save_widget {
+    padding: 5px;
+    margin: 0px 0px 0px 300px;
+    display:inline-block;
+}
+
+span#notebook_name {
+    height: 1em;
+    line-height: 1em;
+    padding: 3px;
+    border: none;
+    font-size: 146.5%;
+}
+
+.ui-menubar-item .ui-button .ui-button-text {
+    padding: 0.4em 1.0em;
+    font-size: 100%;
+}
+
+.ui-menu {
+  -moz-box-shadow:    0px 6px 10px -1px #adadad;
+  -webkit-box-shadow: 0px 6px 10px -1px #adadad;
+  box-shadow:         0px 6px 10px -1px #adadad;
+}
+
+.ui-menu .ui-menu-item a {
+    border: 1px solid transparent;
+    padding: 2px 1.6em;
+}
+
+.ui-menu .ui-menu-item a.ui-state-focus {
+    margin: 0;
+}
+
+.ui-menu hr {
+    margin: 0.3em 0;
+}
+
+#menubar_container {
+    position: relative;
+}
+
+#notification {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    height: 25px;
+    padding: 3px 6px;
+    z-index: 10;
+}
+
+#toolbar {
+    padding: 3px 15px;
+}
+
+#cell_type {
+    font-size: 85%;
+}
+
+
+div#main_app {
+    width: 100%;
+    position: relative;
+}
+
+span#quick_help_area {
+    position: static;
+    padding: 5px 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+.help_string {
+    float: right;
+    width: 170px;
+    padding: 0px 5px;
+    text-align: left;
+    font-size: 85%;
+}
+
+.help_string_label {
+    float: right;
+    font-size: 85%;
+}
+
+div#notebook_panel {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+}
+
+div#notebook {
+    overflow-y: scroll;
+    overflow-x: auto;
+    width: 100%;
+    /* This spaces the cell away from the edge of the notebook area */
+    padding: 5px 5px 15px 5px;
+    margin: 0px;
+    background-color: white;
+}
+
+div#pager_splitter {
+    height: 8px;
+}
+
+div#pager {
+    padding: 15px;
+    overflow: auto;
+    display: none;
+}
+
+div.ui-widget-content {
+    border: 1px solid #aaa;
+    outline: none;
+}
+
+.cell {
+    border: 1px solid transparent;
+}
+
+div.cell {
+    width: 100%;
+    padding: 5px 5px 5px 0px;
+    /* This acts as a spacer between cells, that is outside the border */
+    margin: 2px 0px 2px 0px;
+}
+
+div.code_cell {
+    background-color: white;
+}
+
+/* any special styling for code cells that are currently running goes here */
+div.code_cell.running {
+}
+
+div.prompt {
+    /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+    width: 11ex;
+    /* This 0.4em is tuned to match the padding on the CodeMirror editor. */
+    padding: 0.4em;
+    margin: 0px;
+    font-family: monospace;
+    text-align:right;
+}
+
+div.input {
+    page-break-inside: avoid;
+}
+
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f7f7f7;
+}
+
+div.input_prompt {
+    color: navy;
+    border-top: 1px solid transparent;
+}
+
+div.output_wrapper {
+    /* This is a spacer between the input and output of each cell */
+    margin-top: 5px;
+    margin-left: 5px;
+    /* FF needs explicit width to stretch */
+    width: 100%;
+    /* this position must be relative to enable descendents to be absolute within it */
+    position: relative;
+}
+
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  
+  overflow: auto;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .8);
+}
+
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin-right: 5px;
+}
+
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px;
+  position: absolute;
+  border-radius: 3px;
+}
+
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+
+div.output_prompt {
+    color: darkred;
+    /* 5px right shift to account for margin in parent container */
+    margin: 0 5px 0 -5px;
+}
+
+/* This class is the outer container of all output sections. */
+div.output_area {
+    padding: 0px;
+    page-break-inside: avoid;
+}
+
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+    padding: 0.4em 0.4em 0.4em 0.4em;
+}
+
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+
+/* all text output has this class: */
+div.output_text {
+    text-align: left;
+    color: black;
+    font-family: monospace;
+}
+
+/* stdout/stderr are 'text' as well as 'stream', but pyout/pyerr are *not* streams */
+div.output_stream {
+    padding-top: 0.0em;
+    padding-bottom: 0.0em;
+}
+div.output_stdout {
+}
+div.output_stderr {
+    background: #fdd; /* very light red background for stderr */
+}
+
+div.output_latex {
+    text-align: left;
+    color: black;
+}
+
+div.output_html {
+}
+
+div.output_png {
+}
+
+div.output_jpeg {
+}
+
+div.text_cell {
+    background-color: white;
+    padding: 5px 5px 5px 5px;
+}
+
+div.text_cell_input {
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f7f7f7;
+}
+
+div.text_cell_render {
+    font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    outline: none;
+    resize: none;
+    width:  inherit;
+    border-style: none;
+    padding: 5px;
+    color: black;
+}
+
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font. 
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+
+.CodeMirror {
+    line-height: 1.231;  /* Changed from 1em to our global default */
+}
+
+.CodeMirror-scroll {
+    height: auto;     /* Changed to auto to autogrow */
+    /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+    /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+    overflow-y: hidden;
+    overflow-x: auto; /* Changed from auto to remove scrollbar */
+}
+
+/* CSS font colors for translated ANSI colors. */
+
+
+.ansiblack {color: black;}
+.ansired {color: darkred;}
+.ansigreen {color: darkgreen;}
+.ansiyellow {color: brown;}
+.ansiblue {color: darkblue;}
+.ansipurple {color: darkviolet;}
+.ansicyan {color: steelblue;}
+.ansigrey {color: grey;}
+.ansibold {font-weight: bold;}
+
+.completions {
+    position: absolute;
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid grey;
+}
+
+.completions select {
+    background: white;
+    outline: none;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    overflow: auto;
+    font-family: monospace;
+}
+
+option.context {
+  background-color: #DEF7FF;
+}
+option.introspection {
+  background-color: #EBF4EB;
+}
+
+/*fixed part of the completion*/
+.completions p b {
+    font-weight:bold;
+}
+
+.completions p {
+    background: #DDF;
+    /*outline: none;
+    padding: 0px;*/
+    border-bottom: black solid 1px;
+    padding: 1px;
+    font-family: monospace;
+}
+
+pre.dialog {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 0.4em;
+    padding-left: 2em;
+}
+
+p.dialog {
+    padding : 0.2em;
+}
+
+.shortcut_key {
+    display: inline-block;
+    width: 15ex;
+    text-align: right;
+    font-family: monospace;
+}
+
+.shortcut_descr {
+}
+
+/* Word-wrap output correctly.  This is the CSS3 spelling, though Firefox seems
+   to not honor it correctly.  Webkit browsers (Chrome, rekonq, Safari) do.
+ */
+pre, code, kbd, samp { white-space: pre-wrap; }
+
+#fonttest {
+    font-family: monospace;
+}
+
+.js-error {
+    color: darkred;
+}
+</style>
+<style type="text/css">
+.rendered_html {color: black;}
+.rendered_html em {font-style: italic;}
+.rendered_html strong {font-weight: bold;}
+.rendered_html u {text-decoration: underline;}
+.rendered_html :link { text-decoration: underline }
+.rendered_html :visited { text-decoration: underline }
+.rendered_html h1 {font-size: 197%; margin: .65em 0; font-weight: bold;}
+.rendered_html h2 {font-size: 153.9%; margin: .75em 0; font-weight: bold;}
+.rendered_html h3 {font-size: 123.1%; margin: .85em 0; font-weight: bold;}
+.rendered_html h4 {font-size: 100% margin: 0.95em 0; font-weight: bold;}
+.rendered_html h5 {font-size: 85%; margin: 1.5em 0; font-weight: bold;}
+.rendered_html h6 {font-size: 77%; margin: 1.65em 0; font-weight: bold;}
+.rendered_html ul {list-style:disc; margin: 1em 2em;}
+.rendered_html ul ul {list-style:square; margin: 0em 2em;}
+.rendered_html ul ul ul {list-style:circle; margin-left: 0em 2em;}
+.rendered_html ol {list-style:upper-roman; margin: 1em 2em;}
+.rendered_html ol ol {list-style:upper-alpha; margin: 0em 2em;}
+.rendered_html ol ol ol {list-style:decimal; margin: 0em 2em;}
+.rendered_html ol ol ol ol {list-style:lower-alpha; margin: 0em 2em;}
+.rendered_html ol ol ol ol ol {list-style:lower-roman; margin: 0em 2em;}
+
+.rendered_html hr {
+    color: black;
+    background-color: black;
+}
+
+.rendered_html pre {
+    margin: 1em 2em;
+}
+
+.rendered_html blockquote {
+    margin: 1em 2em;
+}
+
+.rendered_html table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 1em 2em;
+}
+
+.rendered_html td {
+    border: 1px solid black;
+    text-align: left;
+    vertical-align: middle;
+    padding: 4px;
+}
+
+.rendered_html th {
+    border: 1px solid black;
+    text-align: left;
+    vertical-align: middle;
+    padding: 4px;
+    font-weight: bold;
+}
+
+.rendered_html tr {
+    border: 1px solid black;
+}    
+
+.rendered_html p + p {
+    margin-top: 1em;
+}
+
+
+</style>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+body {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.4em;
+}
+</style>
+
+<script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript">
+
+</script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: {'.MathJax_Display': {"margin": 0}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+</head>
+<body>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1>Inspection</h1>
+<p>Let's remake the <code>Person</code> class in the tour:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">descr</span> <span class="kn">import</span> <span class="n">boxy_notebook</span><span class="p">,</span> <span class="n">descr</span><span class="p">,</span> <span class="n">HTMLRuleBuilder</span> <span class="k">as</span> <span class="n">RB</span>
+<span class="kn">from</span> <span class="nn">descr.util</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="n">pr</span> <span class="o">=</span> <span class="n">boxy_notebook</span><span class="p">(</span><span class="n">always_setup</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">occupation</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupation</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">occupation</span>
+    <span class="k">def</span> <span class="nf">__descr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recurse</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">recurse</span><span class="p">(</span><span class="n">Object</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="n">occupation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupation</span><span class="p">))</span>
+    
+<span class="n">peter</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&quot;Peter&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="s">&quot;baker&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">peter</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="@Person +Peter assoc object:done object vstack stack"><span class="scalar objectlabel"><span class="">Peter</span></span><span class="assoc_separator"></span><span class="fieldlist sequence"><span class="vstack assoc stack"><span class="scalar fieldlabel"><span class="">age</span></span><span class="assoc_separator"></span><span class="field +age"><span class="scalar @int"><span class="">20</span></span></span></span><span class="vstack assoc stack"><span class="scalar fieldlabel"><span class="">occupation</span></span><span class="assoc_separator"></span><span class="+occupation field"><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, let's investigate what exactly it is that we are dealing with. The function that calls <code>__descr__</code>
+and will give itself as the <code>recurse</code> argument is, by default, the <code>descr</code> function (see import on top).</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">descr</span><span class="p">(</span><span class="n">peter</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[3]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>[frozenset([&apos;@Person&apos;, &apos;+Peter&apos;, &apos;object&apos;]),
+ (set([&apos;field&apos;, &apos;+age&apos;]), (frozenset([&apos;scalar&apos;, &apos;@int&apos;]), &apos;20&apos;)),
+ (set([&apos;+occupation&apos;, &apos;field&apos;]), (frozenset([&apos;@str&apos;, &apos;scalar&apos;]), &apos;baker&apos;))]</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So it's really just a list of lists or tuples, with sets of classes. In a nutshell:</p>
+<ul>
+<li><code>str</code>, <code>int</code> and other basic types are leaves</li>
+<li>Any iterable that's not a <code>set</code> is a node with other nodes and leaves as children</li>
+<li><code>set</code> (or <code>frozenset</code>), when it is a child of a node, is a set of classes for that
+  node. If more than one is encountered, the node's classes is their union.</li>
+</ul>
+<p>And about the classes you can make the following observations:</p>
+<ul>
+<li><code>@foo</code> is the class given to objects of class <code>Foo</code></li>
+<li><code>+bar</code> is the class given to the label "bar"</li>
+<li>Non-prefixed classes each have their own special meaning</li>
+</ul>
+<p>Now, you could pretty-print that:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pr</span><span class="p">(</span><span class="n">descr</span><span class="p">(</span><span class="n">peter</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="@list sequence"><span class="@set @frozenset sequence"><span class="@str scalar"><span class="">@Person</span></span><span class="@str scalar"><span class="">+Peter</span></span><span class="@str scalar"><span class="">object</span></span></span><span class="@tuple sequence"><span class="@set sequence"><span class="@str scalar"><span class="">field</span></span><span class="@str scalar"><span class="">+age</span></span></span><span class="@tuple sequence"><span class="@set @frozenset sequence"><span class="@str scalar"><span class="">scalar</span></span><span class="@str scalar"><span class="">@int</span></span></span><span class="@str scalar"><span class="">20</span></span></span></span><span class="@tuple sequence"><span class="@set sequence"><span class="@str scalar"><span class="">+occupation</span></span><span class="@str scalar"><span class="">field</span></span></span><span class="@tuple sequence"><span class="@set @frozenset sequence"><span class="@str scalar"><span class="">@str</span></span><span class="@str scalar"><span class="">scalar</span></span></span><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>However, that's confusing, because the differences between sets, lists and tuples only show up on hover
+even though the difference is properly crucial, and if there are generators, they will not be expanded
+(even though they would be if they were describing anything else than themselves).</p>
+<p>Thankfully, you can use <code>Description(descr(obj))</code> or <code>Quote(obj)</code> to get something better:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">descr.util</span> <span class="kn">import</span> <span class="n">Quote</span><span class="p">,</span> <span class="n">Description</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">Quote</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mi">4</span><span class="o">+</span><span class="mi">5j</span><span class="p">]))</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">Quote</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">Quote</span><span class="p">(</span><span class="n">peter</span><span class="p">))</span> <span class="c"># alternatively: pr(Description(descr(peter)))</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="quote description"><span class="class_set quote"><span class="">@list</span><span class="">sequence</span></span><span class="quote description"><span class="class_set quote"><span class="">@int</span><span class="">scalar</span></span><span class="@str scalar"><span class="">1</span></span></span><span class="quote description"><span class="class_set quote"><span class="">@float</span><span class="">scalar</span></span><span class="@str scalar"><span class="">2.3</span></span></span><span class="quote description"><span class="class_set quote"><span class="">@complex</span><span class="">scalar</span></span><span class="@str scalar"><span class="">(4+5j)</span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="quote description"><span class="class_set quote"><span class="">@dict</span></span><span class="quote description"><span class="class_set quote"><span class="">assoc</span></span><span class="quote description"><span class="class_set quote"><span class="">@str</span><span class="">scalar</span></span><span class="@str scalar"><span class="">a</span></span></span><span class="quote description"><span class="class_set quote"><span class="">@int</span><span class="">scalar</span></span><span class="@str scalar"><span class="">1</span></span></span></span><span class="quote description"><span class="class_set quote"><span class="">assoc</span></span><span class="quote description"><span class="class_set quote"><span class="">@str</span><span class="">scalar</span></span><span class="@str scalar"><span class="">b</span></span></span><span class="quote description"><span class="class_set quote"><span class="">@int</span><span class="">scalar</span></span><span class="@str scalar"><span class="">2</span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="quote description"><span class="class_set quote"><span class="">+Peter</span><span class="">@Person</span><span class="">object</span></span><span class="quote description"><span class="class_set quote"><span class="">+age</span><span class="">field</span></span><span class="quote description"><span class="class_set quote"><span class="">@int</span><span class="">scalar</span></span><span class="@str scalar"><span class="">20</span></span></span></span><span class="quote description"><span class="class_set quote"><span class="">+occupation</span><span class="">field</span></span><span class="quote description"><span class="class_set quote"><span class="">@str</span><span class="">scalar</span></span><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Still, though, many processing rules that are applied to such descriptions <em>add</em> classes to nodes, and
+some even rearrange the children. <code>Quote</code> gives you the description prior to the application
+of any rules, but you might want to see the result at various stages of the transformation.
+For instance, <code>@list</code>, <code>@tuple</code> and other sequences get the <code>sequence</code> class. <code>@str</code>, <code>@int</code>,
+etc. get the <code>scalar</code> class.</p>
+<p>For instance, the CSS rules understandably apply to the final HTML that's generated. You can
+get the raw string using <code>pr.translate(descr(obj))</code>, which is certainly informative (it will
+show you the CSS, for one). You can also use the <code>inspect</code> rule:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">pr</span><span class="p">(</span><span class="n">pr</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">descr</span><span class="p">(</span><span class="n">peter</span><span class="p">)))</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">RB</span><span class="p">()</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">peter</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span><span class="p">)</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">RB</span><span class="p">()</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="s">&quot;.{+age}&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">peter</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="@str scalar"><span class="">&lt;style type=&quot;text/css&quot;&gt;
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist &gt; .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: &quot;\&quot;\&quot;&quot;;
+}
+
+.pydescr1 .empty.sequence::before {
+    content: &quot;\2205&quot;;
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack &gt; span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback &gt; * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt &gt; * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header &gt; .path, .source_header &gt; .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame &gt; .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: &quot;in &quot;;
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: &quot;@&quot;;
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set &gt; * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover &gt; .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode &gt; .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode &gt; .\+classes &gt; * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+&lt;/style&gt;&lt;span class=&quot;pydescr1&quot;&gt;&lt;span class=&quot;@Person +Peter assoc object:done object vstack stack&quot;&gt;&lt;span class=&quot;scalar objectlabel&quot;&gt;&lt;span class=&quot;&quot;&gt;Peter&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;assoc_separator&quot;&gt;&lt;/span&gt;&lt;span class=&quot;fieldlist sequence&quot;&gt;&lt;span class=&quot;vstack assoc stack&quot;&gt;&lt;span class=&quot;scalar fieldlabel&quot;&gt;&lt;span class=&quot;&quot;&gt;age&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;assoc_separator&quot;&gt;&lt;/span&gt;&lt;span class=&quot;field +age&quot;&gt;&lt;span class=&quot;scalar @int&quot;&gt;&lt;span class=&quot;&quot;&gt;20&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;vstack assoc stack&quot;&gt;&lt;span class=&quot;scalar fieldlabel&quot;&gt;&lt;span class=&quot;&quot;&gt;occupation&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;assoc_separator&quot;&gt;&lt;/span&gt;&lt;span class=&quot;+occupation field&quot;&gt;&lt;span class=&quot;@str scalar&quot;&gt;&lt;span class=&quot;&quot;&gt;baker&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr2 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr2 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr2 .object {
+}
+
+.pydescr2 .fieldlist > .field {
+}
+
+.pydescr2 .\@traceback, .\@frame {
+}
+
+.pydescr2 .\@frame {
+}
+
+.pydescr2 .location {
+}
+
+.pydescr2 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr2  {
+    display: block;
+}
+
+.pydescr2 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr2 .text * {
+    display: inline;
+}
+
+.pydescr2 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr2 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr2 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr2 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr2 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr2 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr2 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr2 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr2 .assoc {
+}
+
+.pydescr2 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr2 .\@traceback > * {
+    display: block;
+}
+
+.pydescr2 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr2 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr2 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr2 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr2 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr2 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr2 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr2 .source\_code {
+}
+
+.pydescr2 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr2 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr2 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr2 .\@True {
+    color: #080;
+}
+
+.pydescr2 .\@False {
+    color: #f00;
+}
+
+.pydescr2 .\@None {
+    color: #555;
+}
+
+.pydescr2 .\@int {
+    color: #00a;
+}
+
+.pydescr2 .\@float {
+    color: #00a;
+}
+
+.pydescr2 .\@complex {
+    color: #00a;
+}
+
+.pydescr2 .\@str {
+    color: #a00;
+}
+
+.pydescr2 .empty {
+    color: #888;
+}
+
+.pydescr2 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr2 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr2 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr2 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr2 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr2 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr2 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr2 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr2 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr2 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr2 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr2 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr2 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr2 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr2 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr2 .exception_message {
+    display: block;
+}
+
+.pydescr2 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr2 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr2 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr2 .hl {
+    font-weight: bold;
+}
+
+.pydescr2 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr2 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr2 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr2 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr2 .bold {
+    font-weight: bold;
+}
+
+.pydescr2 .black {
+    color: #000;
+}
+
+.pydescr2 .red {
+    color: #f88;
+}
+
+.pydescr2 .green {
+    color: #8f8;
+}
+
+.pydescr2 .yellow {
+    color: #ff8;
+}
+
+.pydescr2 .blue {
+    color: #88f;
+}
+
+.pydescr2 .magenta {
+    color: #f8f;
+}
+
+.pydescr2 .cyan {
+    color: #8ff;
+}
+
+.pydescr2 .white {
+    color: #fff;
+}
+
+.pydescr2 .par {
+}
+
+.pydescr2 .line {
+}
+
+.pydescr2 .raw {
+}
+
+.pydescr2 * {
+}
+</style><span class="pydescr2"><span class="@HTMLNode"><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+Peter</span><span class="">@Person</span><span class="">assoc</span><span class="">object</span><span class="">object:done</span><span class="">stack</span><span class="">vstack</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">objectlabel</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">Peter</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">assoc_separator</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlist</span><span class="">sequence</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">assoc</span><span class="">stack</span><span class="">vstack</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlabel</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">age</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">assoc_separator</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+age</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@int</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">20</span></span></span></span></span></span></span></span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">assoc</span><span class="">stack</span><span class="">vstack</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlabel</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">occupation</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">assoc_separator</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+occupation</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@str</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr3 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr3 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr3 .object {
+}
+
+.pydescr3 .fieldlist > .field {
+}
+
+.pydescr3 .\@traceback, .\@frame {
+}
+
+.pydescr3 .\@frame {
+}
+
+.pydescr3 .location {
+}
+
+.pydescr3 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr3  {
+    display: block;
+}
+
+.pydescr3 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr3 .text * {
+    display: inline;
+}
+
+.pydescr3 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr3 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr3 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr3 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr3 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr3 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr3 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr3 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr3 .assoc {
+}
+
+.pydescr3 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr3 .\@traceback > * {
+    display: block;
+}
+
+.pydescr3 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr3 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr3 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr3 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr3 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr3 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr3 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr3 .source\_code {
+}
+
+.pydescr3 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr3 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr3 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr3 .\@True {
+    color: #080;
+}
+
+.pydescr3 .\@False {
+    color: #f00;
+}
+
+.pydescr3 .\@None {
+    color: #555;
+}
+
+.pydescr3 .\@int {
+    color: #00a;
+}
+
+.pydescr3 .\@float {
+    color: #00a;
+}
+
+.pydescr3 .\@complex {
+    color: #00a;
+}
+
+.pydescr3 .\@str {
+    color: #a00;
+}
+
+.pydescr3 .empty {
+    color: #888;
+}
+
+.pydescr3 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr3 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr3 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr3 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr3 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr3 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr3 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr3 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr3 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr3 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr3 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr3 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr3 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr3 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr3 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr3 .exception_message {
+    display: block;
+}
+
+.pydescr3 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr3 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr3 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr3 .hl {
+    font-weight: bold;
+}
+
+.pydescr3 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr3 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr3 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr3 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr3 .bold {
+    font-weight: bold;
+}
+
+.pydescr3 .black {
+    color: #000;
+}
+
+.pydescr3 .red {
+    color: #f88;
+}
+
+.pydescr3 .green {
+    color: #8f8;
+}
+
+.pydescr3 .yellow {
+    color: #ff8;
+}
+
+.pydescr3 .blue {
+    color: #88f;
+}
+
+.pydescr3 .magenta {
+    color: #f8f;
+}
+
+.pydescr3 .cyan {
+    color: #8ff;
+}
+
+.pydescr3 .white {
+    color: #fff;
+}
+
+.pydescr3 .par {
+}
+
+.pydescr3 .line {
+}
+
+.pydescr3 .raw {
+}
+
+.pydescr3 .\+age {
+}
+</style><span class="pydescr3"><span class=""><span class="@Person +Peter assoc object:done object vstack stack"><span class="scalar objectlabel"><span class="">Peter</span></span><span class="assoc_separator"></span><span class="fieldlist sequence"><span class="vstack assoc stack"><span class="scalar fieldlabel"><span class="">age</span></span><span class="assoc_separator"></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+age</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@int</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">20</span></span></span></span></span></span></span></span></span><span class="vstack assoc stack"><span class="scalar fieldlabel"><span class="">occupation</span></span><span class="assoc_separator"></span><span class="+occupation field"><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can see how <em>that</em> is structured by inspecting <code>descr.html.HTMLNode</code> objects.</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">descr.html</span> <span class="kn">import</span> <span class="n">HTMLNode</span>
+<span class="n">node</span> <span class="o">=</span> <span class="n">HTMLNode</span><span class="p">({</span><span class="s">&quot;class1&quot;</span><span class="p">,</span> <span class="s">&quot;class2&quot;</span><span class="p">},</span> <span class="p">[</span><span class="s">&quot;child1&quot;</span><span class="p">,</span> <span class="s">&quot;child2&quot;</span><span class="p">])</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">Quote</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">RB</span><span class="p">()</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">class1</span><span class="">class2</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@str scalar"><span class="">child1</span></span><span class="@str scalar"><span class="">child2</span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr1 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr1 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .object {
+}
+
+.pydescr1 .fieldlist > .field {
+}
+
+.pydescr1 .\@traceback, .\@frame {
+}
+
+.pydescr1 .\@frame {
+}
+
+.pydescr1 .location {
+}
+
+.pydescr1 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr1  {
+    display: block;
+}
+
+.pydescr1 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr1 .text * {
+    display: inline;
+}
+
+.pydescr1 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr1 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr1 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr1 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr1 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr1 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr1 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr1 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr1 .assoc {
+}
+
+.pydescr1 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr1 .\@traceback > * {
+    display: block;
+}
+
+.pydescr1 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr1 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr1 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr1 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr1 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr1 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr1 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr1 .source\_code {
+}
+
+.pydescr1 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr1 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr1 .\@True {
+    color: #080;
+}
+
+.pydescr1 .\@False {
+    color: #f00;
+}
+
+.pydescr1 .\@None {
+    color: #555;
+}
+
+.pydescr1 .\@int {
+    color: #00a;
+}
+
+.pydescr1 .\@float {
+    color: #00a;
+}
+
+.pydescr1 .\@complex {
+    color: #00a;
+}
+
+.pydescr1 .\@str {
+    color: #a00;
+}
+
+.pydescr1 .empty {
+    color: #888;
+}
+
+.pydescr1 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr1 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr1 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr1 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr1 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr1 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr1 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr1 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr1 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr1 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr1 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr1 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr1 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr1 .exception_message {
+    display: block;
+}
+
+.pydescr1 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr1 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr1 .hl {
+    font-weight: bold;
+}
+
+.pydescr1 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr1 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr1 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr1 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr1 .bold {
+    font-weight: bold;
+}
+
+.pydescr1 .black {
+    color: #000;
+}
+
+.pydescr1 .red {
+    color: #f88;
+}
+
+.pydescr1 .green {
+    color: #8f8;
+}
+
+.pydescr1 .yellow {
+    color: #ff8;
+}
+
+.pydescr1 .blue {
+    color: #88f;
+}
+
+.pydescr1 .magenta {
+    color: #f8f;
+}
+
+.pydescr1 .cyan {
+    color: #8ff;
+}
+
+.pydescr1 .white {
+    color: #fff;
+}
+
+.pydescr1 .par {
+}
+
+.pydescr1 .line {
+}
+
+.pydescr1 .raw {
+}
+</style><span class="pydescr1"><span class=""><span class="quote description"><span class="class_set quote"><span class="">@HTMLNode</span><span class="">assoc</span></span><span class="quote description"><span class="class_set quote"><span class="">+classes</span><span class="">field</span></span><span class="@str scalar"><span class="">class1</span></span><span class="@str scalar"><span class="">class2</span></span></span><span class="quote description"><span class="class_set quote"><span class="">+children</span><span class="">field</span></span><span class="quote description"><span class="class_set quote"><span class="">@str</span><span class="">scalar</span></span><span class="@str scalar"><span class="">child1</span></span></span><span class="quote description"><span class="class_set quote"><span class="">@str</span><span class="">scalar</span></span><span class="@str scalar"><span class="">child2</span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr4 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr4 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr4 .object {
+}
+
+.pydescr4 .fieldlist > .field {
+}
+
+.pydescr4 .\@traceback, .\@frame {
+}
+
+.pydescr4 .\@frame {
+}
+
+.pydescr4 .location {
+}
+
+.pydescr4 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr4  {
+    display: block;
+}
+
+.pydescr4 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr4 .text * {
+    display: inline;
+}
+
+.pydescr4 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr4 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr4 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr4 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr4 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr4 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr4 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr4 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr4 .assoc {
+}
+
+.pydescr4 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr4 .\@traceback > * {
+    display: block;
+}
+
+.pydescr4 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr4 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr4 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr4 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr4 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr4 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr4 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr4 .source\_code {
+}
+
+.pydescr4 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr4 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr4 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr4 .\@True {
+    color: #080;
+}
+
+.pydescr4 .\@False {
+    color: #f00;
+}
+
+.pydescr4 .\@None {
+    color: #555;
+}
+
+.pydescr4 .\@int {
+    color: #00a;
+}
+
+.pydescr4 .\@float {
+    color: #00a;
+}
+
+.pydescr4 .\@complex {
+    color: #00a;
+}
+
+.pydescr4 .\@str {
+    color: #a00;
+}
+
+.pydescr4 .empty {
+    color: #888;
+}
+
+.pydescr4 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr4 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr4 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr4 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr4 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr4 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr4 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr4 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr4 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr4 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr4 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr4 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr4 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr4 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr4 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr4 .exception_message {
+    display: block;
+}
+
+.pydescr4 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr4 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr4 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr4 .hl {
+    font-weight: bold;
+}
+
+.pydescr4 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr4 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr4 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr4 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr4 .bold {
+    font-weight: bold;
+}
+
+.pydescr4 .black {
+    color: #000;
+}
+
+.pydescr4 .red {
+    color: #f88;
+}
+
+.pydescr4 .green {
+    color: #8f8;
+}
+
+.pydescr4 .yellow {
+    color: #ff8;
+}
+
+.pydescr4 .blue {
+    color: #88f;
+}
+
+.pydescr4 .magenta {
+    color: #f8f;
+}
+
+.pydescr4 .cyan {
+    color: #8ff;
+}
+
+.pydescr4 .white {
+    color: #fff;
+}
+
+.pydescr4 .par {
+}
+
+.pydescr4 .line {
+}
+
+.pydescr4 .raw {
+}
+
+.pydescr4 * {
+}
+</style><span class="pydescr4"><span class="@HTMLNode"><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@HTMLNode</span><span class="">assoc</span><span class="">stack</span><span class="">vstack</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+classes</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">class1</span></span></span></span><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">class2</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">assoc_separator</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+children</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@str</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">child1</span></span></span></span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@str</span><span class="">scalar</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">child2</span></span></span></span></span></span></span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This should suffice to tell you what kind of rules to make to manipulate that output (clearing out uninteresting
+classes, highlighting interesting ones, etc.) For instance:</p>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">hide</span> <span class="o">=</span> <span class="s">&quot;scalar sequence stack vstack assoc_separator&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+<span class="n">rules</span> <span class="o">=</span> <span class="n">RB</span><span class="p">()</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rearrange</span><span class="p">(</span><span class="s">&quot;.{@HTMLNode} &gt; .{+classes}&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">classes</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="p">[</span><span class="n">child</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span> <span class="k">if</span> <span class="n">child</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hide</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[</span><span class="s">&#39;---&#39;</span><span class="p">])</span>
+<span class="n">pr</span><span class="p">(</span><span class="n">peter</span><span class="p">,</span> <span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<div class="output_html rendered_html">
+<style type="text/css">
+.pydescr5 .\@str, .hl, .hl1, .hl2, .hl3, .hlE {
+}
+
+.pydescr5 .sequence {
+    border: 2px solid #eee;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr5 .object {
+}
+
+.pydescr5 .fieldlist > .field {
+}
+
+.pydescr5 .\@traceback, .\@frame {
+}
+
+.pydescr5 .\@frame {
+}
+
+.pydescr5 .location {
+}
+
+.pydescr5 .lineno {
+    border-right: 4px solid #00f;
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.pydescr5  {
+    display: block;
+}
+
+.pydescr5 span {
+    display: inline-block;
+    font-family: monospace;
+    vertical-align: middle;
+}
+
+.pydescr5 .text * {
+    display: inline;
+}
+
+.pydescr5 .pre * {
+    display: inline;
+    white-space: pre;
+}
+
+.pydescr5 .scalar {
+    background-color: #eee;
+    margin: 3px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 3px;
+    white-space: pre;
+}
+
+.pydescr5 .empty.\@str::before {
+    content: "\"\"";
+}
+
+.pydescr5 .empty.sequence::before {
+    content: "\2205";
+}
+
+.pydescr5 .stack {
+      display: -webkit-inline-box;
+     display: -moz-inline-box;
+    -moz-box-align: middle;
+    -moz-box-orient: horizontal;
+    -webkit-box-align: middle;
+    -webkit-box-orient: horizontal;
+    box-align: middle;
+    box-orient: horizontal;
+    display: inline-box;
+    margin: 3px;
+}
+
+.pydescr5 .vstack {
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.pydescr5 .hstack {
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+.pydescr5 .stack > span {
+    display: block;
+    margin: 0px;
+}
+
+.pydescr5 .assoc {
+}
+
+.pydescr5 .\@traceback {
+    border: 1px dashed #888;
+}
+
+.pydescr5 .\@traceback > * {
+    display: block;
+}
+
+.pydescr5 .source_excerpt {
+    width: 100%;
+}
+
+.pydescr5 .source_excerpt > * {
+    display: block;
+}
+
+.pydescr5 .source_header {
+    background-color: #eee;
+    width: 98%;
+}
+
+.pydescr5 .source_header > .path, .source_header > .source_loc {
+    display: block;
+    float: right;
+}
+
+.pydescr5 .path, .source_loc, .\@frame > .\+fname {
+}
+
+.pydescr5 .\+fname + .path::before {
+    color: #666;
+    content: "in ";
+}
+
+.pydescr5 .path + .source_loc::before {
+    color: #666;
+    content: "@";
+    font-weight: normal;
+}
+
+.pydescr5 .source\_code {
+}
+
+.pydescr5 .quote.class_set > * {
+    background-color: #eee;
+    color: blue;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.pydescr5 .quote.class_set {
+    border: 2px solid blue;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr5 .quote.description {
+    border: 2px solid #aaa;
+    margin: 3px;
+    padding: 3px;
+}
+
+.pydescr5 .\@True {
+    color: #080;
+}
+
+.pydescr5 .\@False {
+    color: #f00;
+}
+
+.pydescr5 .\@None {
+    color: #555;
+}
+
+.pydescr5 .\@int {
+    color: #00a;
+}
+
+.pydescr5 .\@float {
+    color: #00a;
+}
+
+.pydescr5 .\@complex {
+    color: #00a;
+}
+
+.pydescr5 .\@str {
+    color: #a00;
+}
+
+.pydescr5 .empty {
+    color: #888;
+}
+
+.pydescr5 .empty.sequence {
+    border: 2px solid #fff;
+}
+
+.pydescr5 .\@tuple:hover {
+    border: 2px solid #bbb;
+}
+
+.pydescr5 .\@list:hover {
+    border: 2px solid #f88;
+}
+
+.pydescr5 .\@dict:hover {
+    border: 2px solid #6a6;
+}
+
+.pydescr5 .\@set:hover {
+    border: 2px solid #88f;
+}
+
+.pydescr5 .fieldlist {
+    border-bottom: 2px solid #00f;
+}
+
+.pydescr5 .assoc:hover > .assoc_separator {
+    border: 2px solid #000;
+}
+
+.pydescr5 .assoc\_separator {
+    border: 2px solid #888;
+}
+
+.pydescr5 .objectlabel {
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr5 .objectlabel + .assoc\_separator {
+    border: 2px solid #00f;
+}
+
+.pydescr5 .fieldlabel {
+    color: #a00;
+}
+
+.pydescr5 .traceback_separator {
+    border: 2px solid #888;
+}
+
+.pydescr5 .\@Exception .objectlabel {
+    color: #f00;
+    text-align: left;
+}
+
+.pydescr5 .\@Exception .objectlabel + .assoc\_separator {
+    border: 2px solid #800;
+}
+
+.pydescr5 .\@Exception .fieldlist {
+    border-bottom: 4px solid #800;
+}
+
+.pydescr5 .exception_message {
+    display: block;
+}
+
+.pydescr5 .quote.description:hover {
+    border: 2px solid #000;
+}
+
+.pydescr5 .\@HTMLNode > .\+classes {
+    background-color: #eee;
+}
+
+.pydescr5 .\@HTMLNode > .\+classes > * {
+    color: #00f;
+    padding: 3px;
+}
+
+.pydescr5 .hl {
+    font-weight: bold;
+}
+
+.pydescr5 .hl1 {
+    background-color: #eef;
+    color: #00f;
+    font-weight: bold;
+}
+
+.pydescr5 .hl2 {
+    background-color: #efe;
+    color: #0a0;
+    font-weight: bold;
+}
+
+.pydescr5 .hl3 {
+    background-color: #efc;
+    color: #a60;
+    font-weight: bold;
+}
+
+.pydescr5 .hlE {
+    background-color: #fee;
+    color: #f00;
+    font-weight: bold;
+}
+
+.pydescr5 .bold {
+    font-weight: bold;
+}
+
+.pydescr5 .black {
+    color: #000;
+}
+
+.pydescr5 .red {
+    color: #f88;
+}
+
+.pydescr5 .green {
+    color: #8f8;
+}
+
+.pydescr5 .yellow {
+    color: #ff8;
+}
+
+.pydescr5 .blue {
+    color: #88f;
+}
+
+.pydescr5 .magenta {
+    color: #f8f;
+}
+
+.pydescr5 .cyan {
+    color: #8ff;
+}
+
+.pydescr5 .white {
+    color: #fff;
+}
+
+.pydescr5 .par {
+}
+
+.pydescr5 .line {
+}
+
+.pydescr5 .raw {
+}
+
+.pydescr5 * {
+}
+</style><span class="pydescr5"><span class="@HTMLNode"><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+Peter</span><span class="">@Person</span><span class="">assoc</span><span class="">object</span><span class="">object:done</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">objectlabel</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">Peter</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">---</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlist</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">assoc</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlabel</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">age</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">---</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+age</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@int</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">20</span></span></span></span></span></span></span></span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">assoc</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">fieldlabel</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">occupation</span></span></span></span></span></span><span class="@HTMLNode"><span class="+classes field"><span class="">---</span></span></span><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">+occupation</span><span class="">field</span></span><span class="assoc_separator"></span><span class="field +children"><span class="vstack assoc stack @HTMLNode"><span class="+classes field"><span class="">@str</span></span><span class="assoc_separator"></span><span class="field +children"><span class="@HTMLNode"><span class="field +children"><span class="@str scalar"><span class="">baker</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</body>
+</html>
