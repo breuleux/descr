@@ -40,9 +40,9 @@ def _pull_field(classes, parts):
     # key->value pair of a dict.
 
     # ({"field", "+somelabel", classes...}, parts...)
-    # -> ({"assoc", classes...},
+    # -> ({"assoc"},
     #     ({fieldlabel}, "somelabel"),
-    #     ({"field", "+somelabel"}, parts...))
+    #     ({"field", "+somelabel", classes...}, parts...))
 
     # Automatically applied to all fields that are the immediate
     # children of a node with class "fieldlist" (ctrl+f "_pull_field"
