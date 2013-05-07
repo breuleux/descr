@@ -149,7 +149,7 @@ html_boxy.layout = dict(
         (".table > *", {"display": "table-row"}),
         (".table > * > *", {"display": "table-cell",
                             "padding": "0px 10px 0px 10px"}),
-
+        (".table > .header", {"font-weight": "bold"}),
         ),
 
     close = HTMLRuleBuilder(
@@ -227,6 +227,11 @@ html_boxy.styles["dark"] = dict(
         (".quote.description", {"border": "2px solid #888"}),
         (".quote.description:hover", {"border": "2px solid #fff"}),
 
+        # Table
+
+        (".table", {"border": "1px solid #fff"}),
+        (".table > .header", {"border-bottom": "2px solid #fff"}),
+
         # HTMLNode
 
         (".{@HTMLNode} > .{+classes}", {"background-color": "#222"}),
@@ -297,6 +302,11 @@ html_boxy.styles["light"] = dict(
         (".quote.class_set", {"border": "2px solid blue"}),
         (".quote.description", {"border": "2px solid #aaa"}),
         (".quote.description:hover", {"border": "2px solid #000"}),
+
+        # Table
+
+        (".table", {"border": "1px solid #000"}),
+        (".table > .header", {"border-bottom": "2px solid #000"}),
 
         # HTMLNode
 

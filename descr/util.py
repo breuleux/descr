@@ -72,16 +72,20 @@ class Table(Descriptor):
             column_classes = [column_classes]
 
         self.elements = []
-        for row, rc in zip(elements, row_classes):
+        for i, (row, rc) in enumerate(zip(elements, row_classes)):
             if len(column_classes) < len(row):
                 cclasses = column_classes + [column_classes[-1]] * (len(row) - len(column_classes))
             else:
                 cclasses = column_classes
             newrow = []
-            for column, cc in zip(row, cclasses):
-                newrow.append(Group([column], classes = cc))
+            for j, (column, cc) in enumerate(zip(row, cclasses)):
+                newrow.append(Group([column],
+                                    classes = {"C#"+str(j),
+                                               "C#"+("odd" if j%2 else "even")}|cc))
 
-            self.elements.append(Group(newrow, classes = rc))
+            self.elements.append(Group(newrow,
+                                       classes = {"R#"+str(i),
+                                                  "R#"+("odd" if i%2 else "even")}|rc))
 
     def __descr__(self, recurse):
         return [self.classes] + list(map(recurse, self.elements))
